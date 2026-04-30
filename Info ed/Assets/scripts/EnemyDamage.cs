@@ -12,12 +12,10 @@ public class EnemyDamage : MonoBehaviour
     [Header("Death Particles")]
     public GameObject deathParticles;
 
-    [Header("Yellow Enemy Settings")]
-    public bool isYellowEnemy = false;
-    public GameObject yellowCorpsePrefab;
-
     private EnemyFollow followScript;
     private Rigidbody2D rb;
+
+    private bool isDead = false; // ⭐ FIX
 
     void Awake()
     {
@@ -38,10 +36,13 @@ public class EnemyDamage : MonoBehaviour
         }
     }
 
-    // MAIN DIE FUNCTION (directional burst)
     public void Die(Vector2 hitDirection)
     {
-        // Spawn directional death particles
+        if (isDead) return; // ⭐ FIX
+        isDead = true;
+        Debug.Log("[ENEMY] DIE called");
+
+
         if (deathParticles != null)
         {
             GameObject p = Instantiate(deathParticles, transform.position, Quaternion.identity);
@@ -61,39 +62,29 @@ public class EnemyDamage : MonoBehaviour
             }
         }
 
-        // Yellow enemy → spawn upgrade corpse
-        if (isYellowEnemy && yellowCorpsePrefab != null)
-        {
-            Instantiate(yellowCorpsePrefab, transform.position, Quaternion.identity);
-        }
-
-        // Add score BEFORE destroying the enemy
         ScoreManager.Instance.AddKill(10);
 
-        // Notify spawner ONCE
         if (spawner != null)
             spawner.OnEnemyDeath();
 
-        // Destroy enemy ONCE
         Destroy(gameObject);
     }
 
-    // Fallback if no direction is provided
     public void Die()
     {
         Die(Vector2.right);
     }
 
-    public void FreezeEnemy()
-    {
-        if (followScript != null)
-            followScript.enabled = false;
+   public void FreezeEnemy()
+{
+    if (followScript != null)
+        followScript.enabled = false;
 
-        if (rb != null)
-        {
-            rb.linearVelocity = Vector2.zero;
-            rb.angularVelocity = 0f;
-            rb.bodyType = RigidbodyType2D.Kinematic;
-        }
+    if (rb != null)
+    {
+        rb.linearVelocity = Vector2.zero;      // <- AICI e fixul
+        rb.angularVelocity = 0f;
+        rb.bodyType = RigidbodyType2D.Kinematic;
     }
+}
 }

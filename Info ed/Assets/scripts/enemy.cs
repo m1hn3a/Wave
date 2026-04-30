@@ -5,7 +5,6 @@ public class EnemyFollow : MonoBehaviour
     public Transform player;
     public float speed = 2f;
 
-    [Header("Movement Behavior")]
     public float avoidanceRadius = 1f;
     public float avoidanceStrength = 1.5f;
     public float wobbleStrength = 0.5f;
@@ -17,23 +16,6 @@ public class EnemyFollow : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-    }
-
-    void Update()
-    {
-        if (player == null)
-            return;
-
-        if (spawner != null && spawner.waveStarting)
-        {
-            float dist = Vector2.Distance(transform.position, player.position);
-
-            if (dist < 5f)
-            {
-                spawner.waveStarting = false;
-                ScoreManager.Instance.comboPaused = false;
-            }
-        }
     }
 
     void FixedUpdate()
