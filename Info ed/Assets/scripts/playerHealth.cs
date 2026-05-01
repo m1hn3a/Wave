@@ -8,6 +8,9 @@ public class PlayerHealth : MonoBehaviour
 
     public Slider healthSlider;
 
+    public bool invincible = false;
+
+
     void Awake()
     {
         currentHealth = maxHealth;
@@ -30,6 +33,10 @@ public class PlayerHealth : MonoBehaviour
 
         if (currentHealth <= 0)
             Die();
+
+            if (invincible)
+    return;
+
     }
 
     void Die()
