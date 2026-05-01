@@ -31,6 +31,9 @@ public bool skipWave = false;
 
    void Update()
 {
+Debug.Log("Alive: " + enemiesAlive + " | Finished: " + waveFinished);
+
+
     if (skipWave)
 {
     skipWave = false;
@@ -54,6 +57,15 @@ public bool skipWave = false;
     return;
 }
 
+if (waveActive && enemiesAlive <= 0 && enemiesSpawned == enemiesToSpawn)
+{
+    waveActive = false;
+    waveFinished = true;
+    ScoreManager.Instance.comboPaused = true;
+
+    // resetăm teleportul
+    FindObjectOfType<Teleport>().ResetTeleportFlag();
+}
 
 
         if (!waveActive)
@@ -66,6 +78,8 @@ public bool skipWave = false;
             ScoreManager.Instance.comboPaused = true;
         }
     }
+
+
 
     public void StartNextWave()
     {
