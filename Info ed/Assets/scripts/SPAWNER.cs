@@ -11,7 +11,7 @@ public class SPAWNER : MonoBehaviour
     public int totalWaves = 20;
     public float spawnInterval = 0.1f;
 
-    public TMP_Text waveText;
+    public TMP_Text waveText; // 🔥 mereu activ
 
     private int currentWave = 0;
     private int enemiesToSpawn = 0;
@@ -20,66 +20,54 @@ public class SPAWNER : MonoBehaviour
 
     public bool waveActive = false;
     public bool waveFinished = false;
-    [Header("Debug")]
-public bool skipWave = false;
 
+    [Header("Debug")]
+    public bool skipWave = false;
 
     void Start()
     {
+        waveText.gameObject.SetActive(true); // 🔥 mereu activ
         StartNextWave();
     }
 
-   void Update()
-{
-Debug.Log("Alive: " + enemiesAlive + " | Finished: " + waveFinished);
+    void Update()
+    {
+        // SKIP WAVE
+        if (skipWave)
+        {
+            skipWave = false;
 
+            foreach (EnemyFollow enemy in FindObjectsOfType<EnemyFollow>())
+                Destroy(enemy.gameObject);
 
-    if (skipWave)
-{
-    skipWave = false;
+            enemiesAlive = 0;
+            enemiesSpawned = enemiesToSpawn;
 
-    // distrugem toți inamicii existenți
-    foreach (EnemyFollow enemy in FindObjectsOfType<EnemyFollow>())
-        Destroy(enemy.gameObject);
+            waveActive = false;
+            waveFinished = true;
 
-    enemiesAlive = 0;
-    enemiesSpawned = enemiesToSpawn;
+            ScoreManager.Instance.comboPaused = true;
+            FindObjectOfType<Teleport>().ResetTeleportFlag();
 
-    waveActive = false;
-    waveFinished = true;
-
-    // înghețăm combo-ul ca la final de wave
-    ScoreManager.Instance.comboPaused = true;
-
-    // ⭐ resetăm teleportul ca să meargă TAB
-    FindObjectOfType<Teleport>().ResetTeleportFlag();
-
-    return;
-}
-
-if (waveActive && enemiesAlive <= 0 && enemiesSpawned == enemiesToSpawn)
-{
-    waveActive = false;
-    waveFinished = true;
-    ScoreManager.Instance.comboPaused = true;
-
-    // resetăm teleportul
-    FindObjectOfType<Teleport>().ResetTeleportFlag();
-}
-
-
-        if (!waveActive)
+            TokenSystem.Instance.AddToken(); // token la skip
             return;
+        }
 
-        if (enemiesSpawned >= enemiesToSpawn && enemiesAlive <= 0)
+        // WAVE TERMINAT NORMAL
+        if (waveActive && enemiesAlive <= 0 && enemiesSpawned == enemiesToSpawn)
         {
             waveActive = false;
             waveFinished = true;
+
             ScoreManager.Instance.comboPaused = true;
+            FindObjectOfType<Teleport>().ResetTeleportFlag();
+
+            TokenSystem.Instance.AddToken(); // token la final
         }
+
+        if (!waveActive)
+            return;
     }
-
-
 
     public void StartNextWave()
     {
@@ -91,21 +79,14 @@ if (waveActive && enemiesAlive <= 0 && enemiesSpawned == enemiesToSpawn)
 
         currentWave++;
 
-        if (waveText != null)
-        {
-            waveText.text = "Wave " + currentWave;
-            waveText.gameObject.SetActive(true);
-            Invoke(nameof(HideWaveText), 2f);
-        }
+        // 🔥 wave text actualizat și mereu vizibil
+        waveText.text = "Wave " + currentWave;
 
         enemiesToSpawn = Mathf.RoundToInt(8 * Mathf.Pow(1.35f, currentWave));
         enemiesSpawned = 0;
         enemiesAlive = 0;
 
-        // ⭐ combo înghețat încă 0.4 secunde
         StartCoroutine(UnpauseComboDelayed());
-
-        // ⭐ întârziere 0.2 secunde înainte de spawn
         StartCoroutine(StartWaveDelayed());
     }
 
@@ -120,11 +101,6 @@ if (waveActive && enemiesAlive <= 0 && enemiesSpawned == enemiesToSpawn)
         ScoreManager.Instance.comboPaused = true;
         yield return new WaitForSeconds(0.4f);
         ScoreManager.Instance.comboPaused = false;
-    }
-
-    void HideWaveText()
-    {
-        waveText.gameObject.SetActive(false);
     }
 
     IEnumerator SpawnWave()

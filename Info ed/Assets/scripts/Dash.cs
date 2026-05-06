@@ -6,7 +6,7 @@ public class PlayerDash : MonoBehaviour
     public float dashDuration = 0.12f;
     public float dashCooldown = 3f;
 
-    private bool isDashing = false;
+   [HideInInspector] public bool isDashing = false;
     private bool canDash = true;
 
     private float dashTimer = 0f;
@@ -14,12 +14,14 @@ public class PlayerDash : MonoBehaviour
 
     private Rigidbody2D rb;
     private PlayerHealth playerHealth;
+    private movement pm;
     private Vector2 dashDirection;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         playerHealth = GetComponent<PlayerHealth>();
+        pm = GetComponent<movement>();
     }
 
     void Update()
@@ -45,7 +47,7 @@ public class PlayerDash : MonoBehaviour
         if (isDashing)
         {
             dashTimer += Time.deltaTime;
-            rb.velocity = dashDirection * dashSpeed;
+            rb.linearVelocity = dashDirection * dashSpeed;
 
             if (dashTimer >= dashDuration)
             {
@@ -54,33 +56,27 @@ public class PlayerDash : MonoBehaviour
         }
     }
 
-  void StartDash()
-{
-    // luăm direcția
-    dashDirection = new Vector2(
-        Input.GetAxisRaw("Horizontal"),
-        Input.GetAxisRaw("Vertical")
-    ).normalized;
-
-    // dacă nu te miști → NU dăm dash
-    if (dashDirection == Vector2.zero)
+    void StartDash()
     {
-        return;
+        dashDirection = pm.lastMoveDirection;
+
+        if (dashDirection == Vector2.zero)
+            return;
+
+        canDash = false;
+        isDashing = true;
+        dashTimer = 0f;
+
+        pm.canMove = false;              // 🔥 important
+        playerHealth.invincible = true;  // 🔥 invincibility ON
     }
 
-    canDash = false;
-    isDashing = true;
-    dashTimer = 0f;
-
-    // invincibilitate ON
-    playerHealth.invincible = true;
-}
     void EndDash()
     {
         isDashing = false;
-        rb.velocity = Vector2.zero;
+        rb.linearVelocity = Vector2.zero;
 
-        // invincibilitate OFF
-        playerHealth.invincible = false;
+        pm.canMove = true;               // 🔥 re-enable movement
+        playerHealth.invincible = false; // 🔥 invincibility OFF
     }
 }
