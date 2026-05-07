@@ -71,8 +71,8 @@ public class ShootingUpgradeStation : MonoBehaviour
         switch (playerShoot.fireMode)
         {
             case FireMode.SingleReload: return 1; // Semi-auto
-            case FireMode.SemiAuto:     return 3; // Full-auto
-            case FireMode.FullAuto:     return 5; // Triple shot
+            case FireMode.SemiAuto:     return 1; // Full-auto
+            case FireMode.FullAuto:     return 1; // Triple shot
             case FireMode.TripleShot:   return 0; // Max
         }
 

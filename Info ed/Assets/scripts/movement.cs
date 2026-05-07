@@ -5,7 +5,9 @@ public class movement : MonoBehaviour
     public float moveSpeed = 5f;
 
     [HideInInspector] public Vector2 lastMoveDirection;
-    public bool canMove = true; // 🔥 adăugat
+    public bool canMove = true;
+
+    public int speedLevel = 0; // 🔥 LEVEL SYSTEM
 
     private Rigidbody2D rb;
     private Vector2 input;
@@ -28,8 +30,14 @@ public class movement : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (!canMove) return; // 🔥 FIX IMPORTANT
+        if (!canMove) return;
 
-        rb.linearVelocity = input * moveSpeed;
+        rb.linearVelocity = input * moveSpeed; // 🔥 FIXED
+    }
+
+    public void IncreaseSpeed(float flatAmount)
+    {
+        moveSpeed += flatAmount; // 🔥 creștere lentă, controlată
+        Debug.Log("Speed upgraded → " + moveSpeed);
     }
 }

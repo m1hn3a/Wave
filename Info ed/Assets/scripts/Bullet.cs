@@ -4,6 +4,9 @@ public class Bullet : MonoBehaviour
 {
     public float speed = 10f;
 
+    // 🔥 câți inamici poate lovi glonțul
+    public int pierce = 1;
+
     void Start()
     {
         Destroy(gameObject, 5f); // despawn after 5 seconds
@@ -21,14 +24,19 @@ public class Bullet : MonoBehaviour
             EnemyDamage enemy = col.GetComponent<EnemyDamage>();
             if (enemy != null)
             {
-                // Calculate the bullet's travel direction
-                Vector2 hitDirection = transform.right; 
-                
-                // Call the correct Die() function
+                // direcția glonțului
+                Vector2 hitDirection = transform.right;
+
+                // omoară inamicul
                 enemy.Die(hitDirection);
             }
 
-            Destroy(gameObject); // destroy bullet
+            // 🔥 scade pierce
+            pierce--;
+
+            // dacă nu mai are pierce → distruge glonțul
+            if (pierce <= 0)
+                Destroy(gameObject);
         }
     }
 }

@@ -16,7 +16,15 @@ public class PlayerShoot : MonoBehaviour
     public Transform firePoint;
     public float fireRate = 5f;
     private float nextFire;
+
+    // 🔥 Bullet piercing (upgrade)
+    public int bulletPierce = 1;
+
+    // SINGLE SHOT COOLDOWN
+    private float singleShotCooldown = 2.5f; 
+    private float singleShotTimer = 0f;
     private bool canShoot = true;
+    private bool cooldownFinished = false;
 
     public FireMode fireMode = FireMode.SingleReload;
 
@@ -45,7 +53,6 @@ public class PlayerShoot : MonoBehaviour
     {
         AimAtMouse();
         UpdateLaser();
-        HandleReloadInput();
         Shoot();
     }
 
@@ -92,76 +99,91 @@ public class PlayerShoot : MonoBehaviour
         }
     }
 
-    // -----------------------------
-    // 🔥 MODE 0 — SINGLE + R RELOAD
-    // -----------------------------
+    // ---------------------------------------------------------
+    // 🔥 MODE 0 — SINGLE SHOT + R RELOAD + 2.5s COOLDOWN FIXED
+    // ---------------------------------------------------------
     void SingleShotMode()
     {
         if (Input.GetMouseButtonDown(0) && canShoot)
         {
-            Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+            ShootBullet();
             canShoot = false;
+            cooldownFinished = false;
+            singleShotTimer = singleShotCooldown;
 
             if (reloadText != null)
                 reloadText.gameObject.SetActive(true);
         }
-    }
 
-    void HandleReloadInput()
-    {
-        if (!canShoot && fireMode == FireMode.SingleReload)
+        if (!canShoot)
         {
-            if (Input.GetKeyDown(KeyCode.R))
+            singleShotTimer -= Time.deltaTime;
+
+            if (singleShotTimer <= 0)
+                cooldownFinished = true;
+
+            if (cooldownFinished && Input.GetKeyDown(KeyCode.R))
             {
                 canShoot = true;
-                reloadText.gameObject.SetActive(false);
+                cooldownFinished = false;
+
+                if (reloadText != null)
+                    reloadText.gameObject.SetActive(false);
             }
         }
     }
 
-    // -----------------------------
+    // ---------------------------------------------------------
     // 🔥 MODE 1 — SEMI AUTO
-    // -----------------------------
+    // ---------------------------------------------------------
     void SemiAutoMode()
     {
         if (Input.GetMouseButtonDown(0) && Time.time > nextFire)
         {
             nextFire = Time.time + 1f / fireRate;
-            Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+            ShootBullet();
         }
     }
 
-    // -----------------------------
+    // ---------------------------------------------------------
     // 🔥 MODE 2 — FULL AUTO
-    // -----------------------------
+    // ---------------------------------------------------------
     void FullAutoMode()
     {
         if (Input.GetMouseButton(0) && Time.time > nextFire)
         {
             nextFire = Time.time + 1f / fireRate;
-            Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+            ShootBullet();
         }
     }
 
-    // -----------------------------
+    // ---------------------------------------------------------
     // 🔥 MODE 3 — TRIPLE SHOT
-    // -----------------------------
+    // ---------------------------------------------------------
     void TripleShotMode()
     {
         if (Input.GetMouseButton(0) && Time.time > nextFire)
         {
             nextFire = Time.time + 1f / fireRate;
 
-            // forward
-            Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+            ShootBullet();
 
-            // +45°
-            Instantiate(bulletPrefab, firePoint.position,
+            GameObject b1 = Instantiate(bulletPrefab, firePoint.position,
                 Quaternion.Euler(0, 0, firePoint.rotation.eulerAngles.z + 45));
+            b1.GetComponent<Bullet>().pierce = bulletPierce;
 
-            // -45°
-            Instantiate(bulletPrefab, firePoint.position,
+            GameObject b2 = Instantiate(bulletPrefab, firePoint.position,
                 Quaternion.Euler(0, 0, firePoint.rotation.eulerAngles.z - 45));
+            b2.GetComponent<Bullet>().pierce = bulletPierce;
         }
+    }
+
+    // ---------------------------------------------------------
+    // 🔥 FUNCȚIE CENTRALĂ PENTRU TRAS
+    // ---------------------------------------------------------
+    void ShootBullet()
+    {
+        GameObject b = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+        b.GetComponent<Bullet>().pierce = bulletPierce;
     }
 }
