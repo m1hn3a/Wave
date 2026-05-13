@@ -17,43 +17,148 @@ public class PlayerShoot : MonoBehaviour
     public float fireRate = 5f;
     private float nextFire;
 
-    // 🔥 Bullet piercing (upgrade)
     public int bulletPierce = 1;
 
-    // SINGLE SHOT COOLDOWN
-    private float singleShotCooldown = 2.5f; 
-    private float singleShotTimer = 0f;
-    private bool canShoot = true;
-    private bool cooldownFinished = false;
-
-    public FireMode fireMode = FireMode.SingleReload;
+    [Header("Ammo System")]
+    public int currentAmmo;
+    public int maxAmmo;
+    public float reloadTime = 2.5f;
+    private bool isReloading = false;
 
     [Header("Laser Settings")]
     private LineRenderer lr;
     public float laserLength = 10f;
 
     [Header("UI")]
-    public TMP_Text reloadText;
+    public TMP_Text ammoText;
+    public RectTransform reloadIcon;   // 🔥 iconița de glonț
+
+    public FireMode fireMode = FireMode.SingleReload;
 
     void Start()
+{
+    lr = GetComponent<LineRenderer>();
+    lr.positionCount = 2;
+
+    lr.startColor = new Color(1f, 1f, 1f, 0.25f);
+    lr.endColor   = new Color(1f, 1f, 1f, 0.05f);
+
+    lr.enabled = true;
+
+    // 🔥 Iconița este vizibilă de la început
+    if (reloadIcon != null)
     {
-        lr = GetComponent<LineRenderer>();
-        lr.positionCount = 2;
-
-        lr.startColor = new Color(1f, 1f, 1f, 0.25f);
-        lr.endColor   = new Color(1f, 1f, 1f, 0.05f);
-
-        lr.enabled = true;
-
-        if (reloadText != null)
-            reloadText.gameObject.SetActive(false);
+        reloadIcon.gameObject.SetActive(true);
+        reloadIcon.localRotation = Quaternion.Euler(0, 0, -90f); // poziția normală
     }
+
+    SetAmmoForMode();
+    UpdateAmmoUI();
+}
+
 
     void Update()
     {
         AimAtMouse();
         UpdateLaser();
-        Shoot();
+
+        if (!isReloading)
+            Shoot();
+
+        if (currentAmmo <= 0 && !isReloading)
+            StartCoroutine(Reload());
+    }
+
+    // ---------------------------------------------------------
+    // PUBLIC — necesar pentru upgrade-uri
+    // ---------------------------------------------------------
+    public void SetAmmoForMode()
+    {
+        switch (fireMode)
+        {
+            case FireMode.SingleReload:
+                maxAmmo = 1;
+                break;
+
+            case FireMode.SemiAuto:
+                maxAmmo = 7;
+                break;
+
+            case FireMode.FullAuto:
+                maxAmmo = 20;
+                break;
+
+            case FireMode.TripleShot:
+                maxAmmo = 15;
+                break;
+        }
+
+        currentAmmo = maxAmmo;
+        UpdateAmmoUI();
+    }
+
+    // ---------------------------------------------------------
+    // 🔥 ANIMAȚIA DE RELOAD CU ICONIȚĂ
+    // ---------------------------------------------------------
+    System.Collections.IEnumerator Reload()
+{
+    isReloading = true;
+
+    if (reloadIcon != null)
+    {
+        reloadIcon.gameObject.SetActive(true);
+        reloadIcon.localRotation = Quaternion.Euler(0, 0, -90f); // poziția normală
+    }
+
+    float timer = 0f;
+
+    // 0 → 1 sec: rotire -90° → +90° (adică 180° total)
+    while (timer < 1f)
+    {
+        timer += Time.deltaTime;
+        float t = timer / 1f;
+        float angle = Mathf.Lerp(-90f, 90f, t);
+
+        if (reloadIcon != null)
+            reloadIcon.localRotation = Quaternion.Euler(0, 0, angle);
+
+        yield return null;
+    }
+
+    // 1 → 1.5 sec: pauză la 90°
+    yield return new WaitForSeconds(0.5f);
+
+    // 1.5 → 2.5 sec: rotire 90° → 270° (adică înapoi la -90°)
+    timer = 0f;
+    while (timer < 1f)
+    {
+        timer += Time.deltaTime;
+        float t = timer / 1f;
+        float angle = Mathf.Lerp(90f, 270f, t); // 270° = -90° vizual
+
+        if (reloadIcon != null)
+            reloadIcon.localRotation = Quaternion.Euler(0, 0, angle);
+
+        yield return null;
+    }
+
+    // Final reload
+    currentAmmo = maxAmmo;
+    isReloading = false;
+
+    if (reloadIcon != null)
+    {
+        reloadIcon.localRotation = Quaternion.Euler(0, 0, -90f); // poziția normală
+        reloadIcon.gameObject.SetActive(true); // rămâne vizibilă
+    }
+
+    UpdateAmmoUI();
+}
+
+    void UpdateAmmoUI()
+    {
+        if (ammoText != null)
+            ammoText.text = currentAmmo + "/" + maxAmmo;
     }
 
     void AimAtMouse()
@@ -100,87 +205,82 @@ public class PlayerShoot : MonoBehaviour
     }
 
     // ---------------------------------------------------------
-    // 🔥 MODE 0 — SINGLE SHOT + R RELOAD + 2.5s COOLDOWN FIXED
+    // MODE 0 — SINGLE SHOT (1 glonț)
     // ---------------------------------------------------------
     void SingleShotMode()
     {
-        if (Input.GetMouseButtonDown(0) && canShoot)
+        if (Input.GetMouseButtonDown(0) && currentAmmo > 0)
         {
             ShootBullet();
-            canShoot = false;
-            cooldownFinished = false;
-            singleShotTimer = singleShotCooldown;
-
-            if (reloadText != null)
-                reloadText.gameObject.SetActive(true);
+            currentAmmo--;
+            UpdateAmmoUI();
         }
+    }
 
-        if (!canShoot)
+    // ---------------------------------------------------------
+    // MODE 1 — SEMI AUTO (7 gloanțe)
+    // ---------------------------------------------------------
+    void SemiAutoMode()
+    {
+        if (Input.GetMouseButtonDown(0) && Time.time > nextFire && currentAmmo > 0)
         {
-            singleShotTimer -= Time.deltaTime;
+            nextFire = Time.time + 1f / fireRate;
+            ShootBullet();
+            currentAmmo--;
+            UpdateAmmoUI();
+        }
+    }
 
-            if (singleShotTimer <= 0)
-                cooldownFinished = true;
+    // ---------------------------------------------------------
+    // MODE 2 — FULL AUTO (20 gloanțe)
+    // ---------------------------------------------------------
+    void FullAutoMode()
+    {
+        if (Input.GetMouseButton(0) && Time.time > nextFire && currentAmmo > 0)
+        {
+            nextFire = Time.time + 1f / fireRate;
+            ShootBullet();
+            currentAmmo--;
+            UpdateAmmoUI();
+        }
+    }
 
-            if (cooldownFinished && Input.GetKeyDown(KeyCode.R))
+    // ---------------------------------------------------------
+    // MODE 3 — TRIPLE SHOT (15 gloanțe)
+    // ---------------------------------------------------------
+    void TripleShotMode()
+    {
+        if (Input.GetMouseButton(0) && Time.time > nextFire && currentAmmo > 0)
+        {
+            nextFire = Time.time + 1f / fireRate;
+
+            // bullet 1
+            ShootBullet();
+            currentAmmo--;
+            UpdateAmmoUI();
+
+            // bullet 2
+            if (currentAmmo > 0)
             {
-                canShoot = true;
-                cooldownFinished = false;
+                GameObject b1 = Instantiate(bulletPrefab, firePoint.position,
+                    Quaternion.Euler(0, 0, firePoint.rotation.eulerAngles.z + 45));
+                b1.GetComponent<Bullet>().pierce = bulletPierce;
+                currentAmmo--;
+                UpdateAmmoUI();
+            }
 
-                if (reloadText != null)
-                    reloadText.gameObject.SetActive(false);
+            // bullet 3
+            if (currentAmmo > 0)
+            {
+                GameObject b2 = Instantiate(bulletPrefab, firePoint.position,
+                    Quaternion.Euler(0, 0, firePoint.rotation.eulerAngles.z - 45));
+                b2.GetComponent<Bullet>().pierce = bulletPierce;
+                currentAmmo--;
+                UpdateAmmoUI();
             }
         }
     }
 
-    // ---------------------------------------------------------
-    // 🔥 MODE 1 — SEMI AUTO
-    // ---------------------------------------------------------
-    void SemiAutoMode()
-    {
-        if (Input.GetMouseButtonDown(0) && Time.time > nextFire)
-        {
-            nextFire = Time.time + 1f / fireRate;
-            ShootBullet();
-        }
-    }
-
-    // ---------------------------------------------------------
-    // 🔥 MODE 2 — FULL AUTO
-    // ---------------------------------------------------------
-    void FullAutoMode()
-    {
-        if (Input.GetMouseButton(0) && Time.time > nextFire)
-        {
-            nextFire = Time.time + 1f / fireRate;
-            ShootBullet();
-        }
-    }
-
-    // ---------------------------------------------------------
-    // 🔥 MODE 3 — TRIPLE SHOT
-    // ---------------------------------------------------------
-    void TripleShotMode()
-    {
-        if (Input.GetMouseButton(0) && Time.time > nextFire)
-        {
-            nextFire = Time.time + 1f / fireRate;
-
-            ShootBullet();
-
-            GameObject b1 = Instantiate(bulletPrefab, firePoint.position,
-                Quaternion.Euler(0, 0, firePoint.rotation.eulerAngles.z + 45));
-            b1.GetComponent<Bullet>().pierce = bulletPierce;
-
-            GameObject b2 = Instantiate(bulletPrefab, firePoint.position,
-                Quaternion.Euler(0, 0, firePoint.rotation.eulerAngles.z - 45));
-            b2.GetComponent<Bullet>().pierce = bulletPierce;
-        }
-    }
-
-    // ---------------------------------------------------------
-    // 🔥 FUNCȚIE CENTRALĂ PENTRU TRAS
-    // ---------------------------------------------------------
     void ShootBullet()
     {
         GameObject b = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);

@@ -108,7 +108,10 @@ MonoBehaviour:
   avoidanceRadius: 1
   avoidanceStrength: 1.5
   wobbleStrength: 0.5
-  crowdSlowdownRadius: 2
+  spawner: {fileID: 0}
+  bumpForce: 10
+  bumpDuration: 0.12
+  minDistanceFromPlayer: 0.7
 --- !u!50 &2370227992714025782
 Rigidbody2D:
   serializedVersion: 5
@@ -196,5 +199,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawner: {fileID: 0}
   damage: 10
-  damageCooldown: 1
+  damageCooldown: 0
   deathParticles: {fileID: 6903413903355230253, guid: ed641f82833e1794db08f731b173b9ed, type: 3}

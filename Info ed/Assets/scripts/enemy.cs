@@ -9,14 +9,14 @@ public class EnemyFollow : MonoBehaviour
     public float avoidanceStrength = 1.5f;
     public float wobbleStrength = 0.5f;
 
-public SPAWNER spawner;
+    public SPAWNER spawner;
 
-    public float bumpForce = 10f;          // cât de tare sunt împinși
-    public float bumpDuration = 0.12f;     // cât durează knockback-ul
-    public float minDistanceFromPlayer = 0.7f; // distanța minimă permisă
+    [Header("Knockback")]
+    public float bumpForce = 10f;
+    public float bumpDuration = 0.2f;
+    public float minDistanceFromPlayer = 0.7f;
 
     private bool isBumped = false;
-    private Vector2 bumpVelocity;
     private float bumpTimer = 0f;
 
     private Rigidbody2D rb;
@@ -26,15 +26,17 @@ public SPAWNER spawner;
         rb = GetComponent<Rigidbody2D>();
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (other.CompareTag("Player"))
+        if (collision.collider.CompareTag("Player"))
         {
-            // Knockback instant
-            Vector2 dir = (transform.position - other.transform.position).normalized;
-            bumpVelocity = dir * bumpForce;
-            bumpTimer = bumpDuration;
+            Vector2 dir = (transform.position - collision.transform.position).normalized;
+
+            rb.linearVelocity = Vector2.zero;
+            rb.AddForce(dir * bumpForce, ForceMode2D.Impulse);
+
             isBumped = true;
+            bumpTimer = bumpDuration;
         }
     }
 
@@ -43,20 +45,22 @@ public SPAWNER spawner;
         if (player == null)
             return;
 
-        // Dacă e în knockback, nu urmărește playerul
+        // Knockback active
         if (isBumped)
         {
-            rb.linearVelocity = bumpVelocity;
             bumpTimer -= Time.fixedDeltaTime;
 
-            if (bumpTimer <= 0)
+            if (bumpTimer <= 0f)
+            {
                 isBumped = false;
+            }
 
             return;
         }
 
-        // Dacă e prea aproape de player, se dă înapoi automat
+        // Dacă e prea aproape de player
         float dist = Vector2.Distance(transform.position, player.position);
+
         if (dist < minDistanceFromPlayer)
         {
             Vector2 pushDir = (transform.position - player.position).normalized;
@@ -64,7 +68,7 @@ public SPAWNER spawner;
             return;
         }
 
-        // Mișcare normală spre player
+        // Move către player
         Vector2 moveDir = (player.position - transform.position).normalized;
 
         // Wobble
@@ -75,8 +79,9 @@ public SPAWNER spawner;
 
         moveDir += wobble;
 
-        // Avoidance între inamici
+        // Avoidance
         Collider2D[] nearby = Physics2D.OverlapCircleAll(transform.position, avoidanceRadius);
+
         foreach (var col in nearby)
         {
             if (col.gameObject != gameObject && col.CompareTag("Enemy"))

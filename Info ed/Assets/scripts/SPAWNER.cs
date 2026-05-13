@@ -9,7 +9,6 @@ public class SPAWNER : MonoBehaviour
     public Transform player;
 
     public int totalWaves = 20;
-    public float spawnInterval = 0.1f;
 
     public TMP_Text waveText; // 🔥 mereu activ
 
@@ -26,7 +25,7 @@ public class SPAWNER : MonoBehaviour
 
     void Start()
     {
-        waveText.gameObject.SetActive(true); // 🔥 mereu activ
+        waveText.gameObject.SetActive(true);
         StartNextWave();
     }
 
@@ -49,7 +48,7 @@ public class SPAWNER : MonoBehaviour
             ScoreManager.Instance.comboPaused = true;
             FindObjectOfType<Teleport>().ResetTeleportFlag();
 
-            TokenSystem.Instance.AddToken(); // token la skip
+            TokenSystem.Instance.AddToken();
             return;
         }
 
@@ -62,7 +61,7 @@ public class SPAWNER : MonoBehaviour
             ScoreManager.Instance.comboPaused = true;
             FindObjectOfType<Teleport>().ResetTeleportFlag();
 
-            TokenSystem.Instance.AddToken(); // token la final
+            TokenSystem.Instance.AddToken();
         }
 
         if (!waveActive)
@@ -79,10 +78,15 @@ public class SPAWNER : MonoBehaviour
 
         currentWave++;
 
-        // 🔥 wave text actualizat și mereu vizibil
         waveText.text = "Wave " + currentWave;
 
-        enemiesToSpawn = Mathf.RoundToInt(8 * Mathf.Pow(1.35f, currentWave));
+        // 🔥 BALANSARE WAVE 1–3 (mult mai ușoare)
+        if (currentWave == 1) enemiesToSpawn = 4;
+        else if (currentWave == 2) enemiesToSpawn = 7;
+        else if (currentWave == 3) enemiesToSpawn = 12;
+        else
+            enemiesToSpawn = Mathf.RoundToInt(8 * Mathf.Pow(1.35f, currentWave)); // 🔥 Wave 4+ identic cu ce aveai
+
         enemiesSpawned = 0;
         enemiesAlive = 0;
 
@@ -114,7 +118,9 @@ public class SPAWNER : MonoBehaviour
                 enemiesAlive++;
             }
 
-            yield return new WaitForSeconds(spawnInterval);
+            // 🔥 spawn rate gradual (dar wave 4 rămâne ca acum)
+            float dynamicInterval = Mathf.Clamp(0.5f - currentWave * 0.1f, 0.1f, 0.5f);
+            yield return new WaitForSeconds(dynamicInterval);
         }
     }
 
@@ -143,7 +149,9 @@ public class SPAWNER : MonoBehaviour
         Vector2 screenMin = cam.ScreenToWorldPoint(new Vector3(0, 0));
         Vector2 screenMax = cam.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height));
 
-        float offset = 2f;
+        // 🔥 distanță graduală (wave 4 = identic cu ce aveai)
+        float offset = Mathf.Clamp(6f - currentWave, 2f, 6f);
+
         Vector2 spawnPos = Vector2.zero;
 
         int side = Random.Range(0, 4);

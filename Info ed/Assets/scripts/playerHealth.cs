@@ -1,14 +1,24 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 public class PlayerHealth : MonoBehaviour
 {
+    [Header("Health Settings")]
     public int maxHealth = 100;
     public int currentHealth;
 
     public Slider healthSlider;
-
     public bool invincible = false;
+
+    [Header("Damage Flash")]
+    public SpriteRenderer playerSprite;
+    public float flashDuration = 0.1f;
+
+    [Header("Damage SFX")]
+    public AudioSource audioSource;
+    public AudioClip damageSFX;
+    [Range(0f, 1f)] public float sfxVolume = 1f;
 
     void Awake()
     {
@@ -29,13 +39,40 @@ public class PlayerHealth : MonoBehaviour
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
+        FlashRed();
+        PlayDamageSFX();
         UpdateHealthUI();
 
         if (currentHealth <= 0)
             Die();
     }
 
-    // 🔥 Funcție necesară pentru Heal Upgrade
+    // 🔥 Flash roșu
+    void FlashRed()
+    {
+        if (playerSprite != null)
+            StartCoroutine(FlashRoutine());
+    }
+
+    IEnumerator FlashRoutine()
+    {
+        Color original = playerSprite.color;
+
+        playerSprite.color = new Color(1f, 0.3f, 0.3f);
+        yield return new WaitForSeconds(flashDuration);
+        playerSprite.color = original;
+    }
+
+    // 🔥 Damage SFX
+    void PlayDamageSFX()
+    {
+        if (audioSource != null && damageSFX != null)
+        {
+            audioSource.PlayOneShot(damageSFX, sfxVolume);
+        }
+    }
+
+    // 🔥 Heal Upgrade
     public void HealToFull()
     {
         currentHealth = maxHealth;
@@ -43,7 +80,7 @@ public class PlayerHealth : MonoBehaviour
         Debug.Log("HP FULL → viața a fost umplută complet!");
     }
 
-    // 🔥 Funcție centralizată pentru UI
+    // 🔥 UI centralizat
     public void UpdateHealthUI()
     {
         if (healthSlider != null)

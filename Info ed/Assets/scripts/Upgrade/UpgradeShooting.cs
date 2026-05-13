@@ -1,16 +1,29 @@
 using UnityEngine;
+using TMPro;
 
 public class ShootingUpgradeStation : MonoBehaviour
 {
-    public PlayerShoot playerShoot;   
+    public PlayerShoot playerShoot;
+    public int upgradeCost = 1;
+
+    [Header("UI Upgrade Text")]
+    public TextMeshProUGUI upgradeText;   // 🔥 tragi TMP-ul aici
+    public string[] upgradeDescriptions;  // 🔥 text pentru fiecare upgrade
 
     private bool playerInside = false;
+
+    void Start()
+    {
+        if (upgradeText != null)
+            upgradeText.gameObject.SetActive(false); // ascuns la început
+    }
 
     void Update()
     {
         if (playerInside && Input.GetKeyDown(KeyCode.E))
         {
             BuyUpgrade();
+            UpdateUpgradeText(); // 🔥 actualizează textul după upgrade
         }
     }
 
@@ -19,7 +32,9 @@ public class ShootingUpgradeStation : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInside = true;
-            Debug.Log("Player entered shooting upgrade zone");
+            UpdateUpgradeText(); // 🔥 afișează textul corect
+            if (upgradeText != null)
+                upgradeText.gameObject.SetActive(true);
         }
     }
 
@@ -28,16 +43,14 @@ public class ShootingUpgradeStation : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInside = false;
+            if (upgradeText != null)
+                upgradeText.gameObject.SetActive(false);
         }
     }
 
     void BuyUpgrade()
     {
-        int cost = GetUpgradeCost();
-
-        Debug.Log("Upgrade cost: " + cost);
-
-        if (!TokenSystem.Instance.SpendToken(cost))
+        if (!TokenSystem.Instance.SpendToken(upgradeCost))
         {
             Debug.Log("NU AI DESTUI TOKENI!");
             return;
@@ -47,35 +60,40 @@ public class ShootingUpgradeStation : MonoBehaviour
         {
             case FireMode.SingleReload:
                 playerShoot.fireMode = FireMode.SemiAuto;
-                Debug.Log("UPGRADE 1 → SEMI AUTO");
                 break;
 
             case FireMode.SemiAuto:
                 playerShoot.fireMode = FireMode.FullAuto;
-                Debug.Log("UPGRADE 2 → FULL AUTO");
                 break;
 
             case FireMode.FullAuto:
                 playerShoot.fireMode = FireMode.TripleShot;
-                Debug.Log("UPGRADE 3 → TRIPLE SHOT");
                 break;
 
             case FireMode.TripleShot:
-                Debug.Log("MAX UPGRADE REACHED");
+                Debug.Log("MAX UPGRADE");
                 break;
         }
     }
 
-    int GetUpgradeCost()
+    // 🔥 AICI SE SCHIMBĂ TEXTUL ÎN FUNCȚIE DE UPGRADE
+    void UpdateUpgradeText()
     {
+        if (upgradeText == null) return;
+
+        int index = 0;
+
         switch (playerShoot.fireMode)
         {
-            case FireMode.SingleReload: return 1; // Semi-auto
-            case FireMode.SemiAuto:     return 1; // Full-auto
-            case FireMode.FullAuto:     return 1; // Triple shot
-            case FireMode.TripleShot:   return 0; // Max
+            case FireMode.SingleReload: index = 0; break;
+            case FireMode.SemiAuto:     index = 1; break;
+            case FireMode.FullAuto:     index = 2; break;
+            case FireMode.TripleShot:   index = 3; break;
         }
 
-        return 0;
+        if (index < upgradeDescriptions.Length)
+            upgradeText.text = upgradeDescriptions[index];
+        else
+            upgradeText.text = "MAX UPGRADE";
     }
 }

@@ -7,6 +7,7 @@ public class EnemyDamage : MonoBehaviour
     [Header("Damage Settings")]
     public int damage = 10;
     public float damageCooldown = 1f;
+
     private float lastDamageTime = 0f;
 
     [Header("Death Particles")]
@@ -15,7 +16,7 @@ public class EnemyDamage : MonoBehaviour
     private EnemyFollow followScript;
     private Rigidbody2D rb;
 
-    private bool isDead = false; // ⭐ FIX
+    private bool isDead = false;
 
     void Awake()
     {
@@ -28,6 +29,7 @@ public class EnemyDamage : MonoBehaviour
         if (collision.collider.CompareTag("Player"))
         {
             PlayerHealth hp = collision.collider.GetComponent<PlayerHealth>();
+
             if (hp != null && Time.time >= lastDamageTime + damageCooldown)
             {
                 hp.TakeDamage(damage);
@@ -38,10 +40,11 @@ public class EnemyDamage : MonoBehaviour
 
     public void Die(Vector2 hitDirection)
     {
-        if (isDead) return; // ⭐ FIX
-        isDead = true;
-        Debug.Log("[ENEMY] DIE called");
+        if (isDead) return;
 
+        isDead = true;
+
+        Debug.Log("[ENEMY] DIE called");
 
         if (deathParticles != null)
         {
@@ -51,6 +54,7 @@ public class EnemyDamage : MonoBehaviour
             p.transform.rotation = Quaternion.Euler(0, 0, angle);
 
             ParticleSystem ps = p.GetComponent<ParticleSystem>();
+
             if (ps != null)
             {
                 float totalDuration = ps.main.duration + ps.main.startLifetime.constantMax;
@@ -75,16 +79,16 @@ public class EnemyDamage : MonoBehaviour
         Die(Vector2.right);
     }
 
-   public void FreezeEnemy()
-{
-    if (followScript != null)
-        followScript.enabled = false;
-
-    if (rb != null)
+    public void FreezeEnemy()
     {
-        rb.linearVelocity = Vector2.zero;      // <- AICI e fixul
-        rb.angularVelocity = 0f;
-        rb.bodyType = RigidbodyType2D.Kinematic;
+        if (followScript != null)
+            followScript.enabled = false;
+
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+            rb.bodyType = RigidbodyType2D.Kinematic;
+        }
     }
-}
 }
