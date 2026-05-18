@@ -1,0 +1,784 @@
+fileFormatVersion: 2
+guid: bf97308771af6e84fa2481c06fdabae2
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7320292495656152227
+    second: rob-idle-Sheet_0
+  - first:
+      213: 1414232388439453446
+    second: rob-idle-Sheet_1
+  - first:
+      213: -6733595403080373164
+    second: rob-idle-Sheet_2
+  - first:
+      213: -5163798932333375435
+    second: rob-idle-Sheet_3
+  - first:
+      213: -8942058523665168738
+    second: rob-idle-Sheet_4
+  - first:
+      213: 6063525763512385173
+    second: rob-idle-Sheet_5
+  - first:
+      213: 554706581276223572
+    second: rob-idle-Sheet_6
+  - first:
+      213: -7997834377470805535
+    second: rob-idle-Sheet_7
+  - first:
+      213: 5981892553427332571
+    second: rob-idle-Sheet_8
+  - first:
+      213: 83836131319459432
+    second: rob-idle-Sheet_9
+  - first:
+      213: -342333600726995611
+    second: rob-idle-Sheet_10
+  - first:
+      213: -3040673010700668586
+    second: rob-idle-Sheet_11
+  - first:
+      213: -1669807185001837890
+    second: rob-idle-Sheet_12
+  - first:
+      213: 5710686284015953704
+    second: rob-idle-Sheet_13
+  - first:
+      213: -7607713216767027341
+    second: rob-idle-Sheet_14
+  - first:
+      213: 3209039388983773828
+    second: rob-idle-Sheet_15
+  - first:
+      213: -9098186208008761206
+    second: rob-idle-Sheet_16
+  - first:
+      213: -80583794655716703
+    second: rob-idle-Sheet_17
+  - first:
+      213: -3049483066339792951
+    second: rob-idle-Sheet_18
+  - first:
+      213: 649963069115428865
+    second: rob-idle-Sheet_19
+  - first:
+      213: 7493831200311911713
+    second: rob-idle-Sheet_20
+  - first:
+      213: 2874314057660964567
+    second: rob-idle-Sheet_21
+  - first:
+      213: -7384337630597052759
+    second: rob-idle-Sheet_22
+  - first:
+      213: 2178897478858613147
+    second: rob-idle-Sheet_23
+  - first:
+      213: 7753514584908324613
+    second: rob-idle-Sheet_24
+  - first:
+      213: 6295830535256147681
+    second: rob-idle-Sheet_25
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 155.7
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: rob-idle-Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 75
+        y: 1090
+        width: 119
+        height: 157
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40f93414f513146449d61d4d936ef3f6
+      internalID: -1002694522
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rob-idle-Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 331
+        y: 1089
+        width: 119
+        height: 159
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 83ff45abf31da17428733086802dbf33
+      internalID: -216997395
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rob-idle-Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 1088
+        width: 119
+        height: 160
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4b34724cd1c36e1439d30a099c3d170e
+      internalID: 712971191
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rob-idle-Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 843
+        y: 1087
+        width: 119
+        height: 161
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3ae893be70ab6ec48aad04dfd3564fde
+      internalID: 1970738549
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rob-idle-Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 1099
+        y: 1088
+        width: 119
+        height: 159
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d007108d294ddc04d83d7e2adb43c767
+      internalID: -1814012297
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rob-idle-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 75
+        y: 832
+        width: 119
+        height: 155
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8d64ffb221d74dc49bbb14a3dc6e37ea
+      internalID: 1679994834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rob-idle-Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 331
+        y: 834
+        width: 119
+        height: 155
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 903610d8d5f4d4e47a353c43daf3d88c
+      internalID: 1534674766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rob-idle-Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 832
+        width: 119
+        height: 156
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 121cef18d9e6db54eb640022a17993de
+      internalID: 1876086764
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rob-idle-Sheet_8
+      rect:
+        serializedVersion: 2
+        x: 843
+        y: 832
+        width: 119
+        height: 156
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1c81b4b40aff074438bd8a4dec945461
+      internalID: -512244148
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rob-idle-Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 1099
+        y: 832
+        width: 119
+        height: 155
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 78ff3b73df9cede49a37dc2ef47b31b9
+      internalID: 1701121748
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rob-idle-Sheet_10
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 575
+        width: 119
+        height: 161
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 497a5480e538ddc46985766d061abe33
+      internalID: -1106544428
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rob-idle-Sheet_11
+      rect:
+        serializedVersion: 2
+        x: 332
+        y: 576
+        width: 119
+        height: 161
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3bb1ef6933a86104bb38ebc20921bdb5
+      internalID: 704167731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rob-idle-Sheet_12
+      rect:
+        serializedVersion: 2
+        x: 589
+        y: 577
+        width: 119
+        height: 160
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43cc97990fb617648a49f77698cd1249
+      internalID: -458867083
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rob-idle-Sheet_13
+      rect:
+        serializedVersion: 2
+        x: 833
+        y: 575
+        width: 130
+        height: 162
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0cf33e97177beaa43aa7199c37f9ea22
+      internalID: -1504081867
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rob-idle-Sheet_14
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 575
+        width: 119
+        height: 161
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ffd7deebd19517349835cf5a792535cb
+      internalID: -1273081212
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rob-idle-Sheet_16
+      rect:
+        serializedVersion: 2
+        x: 76
+        y: 321
+        width: 119
+        height: 155
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c7ffbe496352ea4488b3eacd759f3864
+      internalID: 521566501
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rob-idle-Sheet_17
+      rect:
+        serializedVersion: 2
+        x: 332
+        y: 320
+        width: 119
+        height: 158
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d3c6c9efabc498c45866a0ae5fd329f5
+      internalID: 957811503
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rob-idle-Sheet_18
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 320
+        width: 120
+        height: 157
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d108fbefef52fed4e9bd513185b32d54
+      internalID: -51674023
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rob-idle-Sheet_19
+      rect:
+        serializedVersion: 2
+        x: 844
+        y: 319
+        width: 119
+        height: 158
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca36a777148f7144f8105b503d273a0b
+      internalID: -542210803
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rob-idle-Sheet_20
+      rect:
+        serializedVersion: 2
+        x: 1100
+        y: 320
+        width: 119
+        height: 156
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bae5185bca7d2cc4d97f729076a3c241
+      internalID: -138428907
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rob-idle-Sheet_21
+      rect:
+        serializedVersion: 2
+        x: 71
+        y: 64
+        width: 124
+        height: 158
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 09bfdf5801d76b1479338a18af297094
+      internalID: -2108145519
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rob-idle-Sheet_22
+      rect:
+        serializedVersion: 2
+        x: 332
+        y: 63
+        width: 119
+        height: 160
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 08de1c93d7a19474db679e645e893f95
+      internalID: -541467535
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rob-idle-Sheet_23
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 64
+        width: 120
+        height: 159
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dcad32cbc6e40d148a9f78c699335766
+      internalID: 781619404
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rob-idle-Sheet_24
+      rect:
+        serializedVersion: 2
+        x: 844
+        y: 63
+        width: 119
+        height: 161
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5105e07541f7734ea342829b6a15734
+      internalID: -1677555938
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rob-idle-Sheet_25
+      rect:
+        serializedVersion: 2
+        x: 1095
+        y: 66
+        width: 124
+        height: 156
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 76f3e88e6c7f7344c8c9f74323d99525
+      internalID: -845859613
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 6373cdd491016464788618b956fa0449
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      rob-idle-Sheet_0: -1002694522
+      rob-idle-Sheet_1: -216997395
+      rob-idle-Sheet_10: -1106544428
+      rob-idle-Sheet_11: 704167731
+      rob-idle-Sheet_12: -458867083
+      rob-idle-Sheet_13: -1504081867
+      rob-idle-Sheet_14: -1273081212
+      rob-idle-Sheet_15: 1844337997
+      rob-idle-Sheet_16: 521566501
+      rob-idle-Sheet_17: 957811503
+      rob-idle-Sheet_18: -51674023
+      rob-idle-Sheet_19: -542210803
+      rob-idle-Sheet_2: 712971191
+      rob-idle-Sheet_20: -138428907
+      rob-idle-Sheet_21: -2108145519
+      rob-idle-Sheet_22: -541467535
+      rob-idle-Sheet_23: 781619404
+      rob-idle-Sheet_24: -1677555938
+      rob-idle-Sheet_25: -845859613
+      rob-idle-Sheet_3: 1970738549
+      rob-idle-Sheet_4: -1814012297
+      rob-idle-Sheet_5: 1679994834
+      rob-idle-Sheet_6: 1534674766
+      rob-idle-Sheet_7: 1876086764
+      rob-idle-Sheet_8: -512244148
+      rob-idle-Sheet_9: 1701121748
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

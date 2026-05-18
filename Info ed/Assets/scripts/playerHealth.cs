@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -14,6 +13,9 @@ public class PlayerHealth : MonoBehaviour
     [Header("Damage Flash")]
     public SpriteRenderer playerSprite;
     public float flashDuration = 0.1f;
+
+    private bool isFlashing = false;
+    private float flashTimer = 0f;
 
     [Header("Damage SFX")]
     public AudioSource audioSource;
@@ -32,6 +34,20 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        if (isFlashing)
+        {
+            flashTimer -= Time.deltaTime;
+
+            if (flashTimer <= 0f)
+            {
+                isFlashing = false;
+                playerSprite.color = Color.white;
+            }
+        }
+    }
+
     public void TakeDamage(int amount)
     {
         if (invincible) return;
@@ -47,23 +63,19 @@ public class PlayerHealth : MonoBehaviour
             Die();
     }
 
-    // 🔥 Flash roșu
     void FlashRed()
     {
-        if (playerSprite != null)
-            StartCoroutine(FlashRoutine());
+        if (playerSprite == null) return;
+
+        if (!isFlashing)
+        {
+            isFlashing = true;
+            playerSprite.color = new Color(1f, 0.3f, 0.3f);
+        }
+
+        flashTimer = flashDuration;
     }
 
-    IEnumerator FlashRoutine()
-    {
-        Color original = playerSprite.color;
-
-        playerSprite.color = new Color(1f, 0.3f, 0.3f);
-        yield return new WaitForSeconds(flashDuration);
-        playerSprite.color = original;
-    }
-
-    // 🔥 Damage SFX
     void PlayDamageSFX()
     {
         if (audioSource != null && damageSFX != null)
@@ -72,7 +84,6 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-    // 🔥 Heal Upgrade
     public void HealToFull()
     {
         currentHealth = maxHealth;
@@ -80,23 +91,29 @@ public class PlayerHealth : MonoBehaviour
         Debug.Log("HP FULL → viața a fost umplută complet!");
     }
 
-    // 🔥 UI centralizat
     public void UpdateHealthUI()
     {
         if (healthSlider != null)
             healthSlider.value = currentHealth;
     }
 
-    void Die()
+    public void Die()
+{
+    var death = FindAnyObjectByType<DeathScreen>();
+    if (death != null)
     {
-        Debug.Log("Player died");
+        int finalScore = ScoreManager.Instance.score;
+        int finalWave = FindAnyObjectByType<SPAWNER>().currentWave;
 
-        EnemyDamage[] enemies = FindObjectsOfType<EnemyDamage>();
-        foreach (EnemyDamage e in enemies)
-        {
-            e.FreezeEnemy();
-        }
-
-        Destroy(gameObject);
+        death.ShowDeathScreen("PLAYER", finalScore, finalWave);
     }
+
+    SPAWNER.wavePaused = true;
+    movement player = GetComponent<movement>();
+if (player != null)
+    player.canMove = false;
+
+    gameObject.SetActive(false); // sau animație de moarte
+}
+
 }

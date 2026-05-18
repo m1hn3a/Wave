@@ -3,6 +3,9 @@ using UnityEngine;
 public class EnemyFollow : MonoBehaviour
 {
     public Transform player;
+    public Transform coreTransform;
+    public bool targetCore = false;
+
     public float speed = 2f;
 
     public float avoidanceRadius = 1f;
@@ -21,13 +24,37 @@ public class EnemyFollow : MonoBehaviour
 
     private Rigidbody2D rb;
 
+    [Header("Health")]
+    public int baseHP = 10;
+    public int currentHP;
+
+    [HideInInspector] public Transform lookTarget;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
     }
 
+    public void ScaleWithWave(int wave)
+    {
+        float multiplier = 1f + wave * 0.2f;
+        currentHP = Mathf.RoundToInt(baseHP * multiplier);
+    }
+
+    public void TakeDamage(int dmg)
+    {
+        currentHP -= dmg;
+
+        if (currentHP <= 0)
+        {
+            spawner.OnEnemyDeath();
+            Destroy(gameObject);
+        }
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        // PLAYER knockback
         if (collision.collider.CompareTag("Player"))
         {
             Vector2 dir = (transform.position - collision.transform.position).normalized;
@@ -38,38 +65,67 @@ public class EnemyFollow : MonoBehaviour
             isBumped = true;
             bumpTimer = bumpDuration;
         }
+
+        // CORE damage + knockback
+        if (collision.collider.CompareTag("Core"))
+        {
+            Vector2 dir = (transform.position - collision.transform.position).normalized;
+
+            rb.linearVelocity = Vector2.zero;
+            rb.AddForce(dir * bumpForce, ForceMode2D.Impulse);
+
+            isBumped = true;
+            bumpTimer = bumpDuration;
+
+            Core core = collision.collider.GetComponent<Core>();
+            if (core != null)
+                core.TakeDamage(core.damagePerHit);
+        }
     }
 
     void FixedUpdate()
     {
+        // 🔥 FREEZE INSTANT când moare playerul sau reactorul
+        if (SPAWNER.enemiesFrozen)
+        {
+            rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
         if (player == null)
             return;
 
-        // Knockback active
         if (isBumped)
         {
             bumpTimer -= Time.fixedDeltaTime;
 
             if (bumpTimer <= 0f)
-            {
                 isBumped = false;
-            }
 
             return;
         }
 
-        // Dacă e prea aproape de player
-        float dist = Vector2.Distance(transform.position, player.position);
+        // Ținta
+        Transform core = coreTransform != null ? coreTransform : GameObject.FindGameObjectWithTag("Core").transform;
+        Vector2 targetPos = targetCore ? core.position : player.position;
 
-        if (dist < minDistanceFromPlayer)
+        lookTarget = targetCore ? core : player;
+
+        // Prea aproape de player → împinge înapoi
+        if (!targetCore)
         {
-            Vector2 pushDir = (transform.position - player.position).normalized;
-            rb.linearVelocity = pushDir * (speed * 2f);
-            return;
+            float dist = Vector2.Distance(transform.position, player.position);
+
+            if (dist < minDistanceFromPlayer)
+            {
+                Vector2 pushDir = (transform.position - player.position).normalized;
+                rb.linearVelocity = pushDir * (speed * 2f);
+                return;
+            }
         }
 
-        // Move către player
-        Vector2 moveDir = (player.position - transform.position).normalized;
+        // Direcția principală
+        Vector2 moveDir = (targetPos - (Vector2)transform.position).normalized;
 
         // Wobble
         Vector2 wobble = new Vector2(

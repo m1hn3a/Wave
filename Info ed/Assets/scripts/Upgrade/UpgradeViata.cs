@@ -1,9 +1,14 @@
 using UnityEngine;
+using TMPro;
 
 public class HealthUpgradeStation : MonoBehaviour
 {
-    public PlayerHealth playerHealth;   // tragi Player-ul aici
-    public int healCost = 1;            // mereu 1 token
+    [Header("References")]
+    public PlayerHealth playerHealth;          // tragi Player-ul aici
+    public TextMeshProUGUI upgradeText;        // TMP-ul din canvasul playerului
+
+    [Header("Settings")]
+    public int healCost = 1;                   // mereu 1 token
 
     private bool playerInside = false;
 
@@ -12,6 +17,7 @@ public class HealthUpgradeStation : MonoBehaviour
         if (playerInside && Input.GetKeyDown(KeyCode.E))
         {
             BuyHeal();
+            UpdateUpgradeText(); // textul rămâne același, dar îl chemăm pentru consistență
         }
     }
 
@@ -20,7 +26,8 @@ public class HealthUpgradeStation : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInside = true;
-            Debug.Log("Player entered HEAL zone");
+            UpdateUpgradeText();               // afișăm textul când intră
+            upgradeText.gameObject.SetActive(true);
         }
     }
 
@@ -29,22 +36,34 @@ public class HealthUpgradeStation : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInside = false;
+            upgradeText.gameObject.SetActive(false); // ascundem textul
         }
     }
 
     void BuyHeal()
     {
-        // verificăm tokenii
+        // 🔥 NU POATE CUMPĂRA DACĂ VIAȚA E FULL
+        if (playerHealth.currentHealth >= playerHealth.maxHealth)
+        {
+            Debug.Log("HP FULL → nu poți cumpăra heal.");
+            return;
+        }
+
         if (!TokenSystem.Instance.SpendToken(healCost))
         {
             Debug.Log("NU AI DESTUI TOKENI!");
             return;
         }
 
-        // umple viața
         playerHealth.currentHealth = playerHealth.maxHealth;
         playerHealth.UpdateHealthUI();
 
-        Debug.Log("HP FULL → Ai fost vindecat complet!");
+        Debug.Log("HP FULLY HEALED!");
+    }
+
+    void UpdateUpgradeText()
+    {
+        upgradeText.text =
+            "Fully heals the player: 1tk";
     }
 }

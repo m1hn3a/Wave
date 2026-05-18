@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 public class ScoreManager : MonoBehaviour
 {
@@ -15,6 +16,10 @@ public class ScoreManager : MonoBehaviour
     [HideInInspector]
     public bool comboPaused = false;
 
+    // 🔥 NOU
+    private bool waitingForFirstKill = false;
+    private float waveStartTimer = 0f;
+
     void Awake()
     {
         Instance = this;
@@ -22,6 +27,20 @@ public class ScoreManager : MonoBehaviour
 
     void Update()
     {
+        // 🔥 PAUZĂ LA ÎNCEPUT DE WAVE
+        if (waitingForFirstKill)
+        {
+            waveStartTimer -= Time.deltaTime;
+
+            if (waveStartTimer <= 0f)
+            {
+                comboPaused = false;
+                waitingForFirstKill = false;
+            }
+
+            return; // nu rulăm restul logicii cât timp e pauză
+        }
+
         if (comboPaused)
             return;
 
@@ -40,8 +59,23 @@ public class ScoreManager : MonoBehaviour
         }
     }
 
+    // 🔥 APELI ASTA CÂND ÎNCEPE WAVE-UL
+    public void PauseScoreAtWaveStart()
+    {
+        comboPaused = true;
+        waitingForFirstKill = true;
+        waveStartTimer = 3f; // 3 secunde pauză
+    }
+
     public void AddKill(int basePoints)
     {
+        // 🔥 dacă moare primul inamic, scoatem pauza instant
+        if (waitingForFirstKill)
+        {
+            waitingForFirstKill = false;
+            comboPaused = false;
+        }
+
         comboMultiplier += comboIncrease;
         comboTimer = comboDuration;
 

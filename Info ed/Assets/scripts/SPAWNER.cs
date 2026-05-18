@@ -4,15 +4,20 @@ using System.Collections;
 
 public class SPAWNER : MonoBehaviour
 {
+    public static bool wavePaused = false;
+    public static bool enemiesFrozen = false;   // 🔥 FREEZE GLOBAL
+
     [Header("Main Settings")]
-    public GameObject enemyPrefab;
+    public GameObject[] enemyPrefabs;
     public Transform player;
+    public Transform coreTransform;
 
     public int totalWaves = 20;
 
-    public TMP_Text waveText; // 🔥 mereu activ
+    public TMP_Text waveText;
+    public TMP_Text pauseWaveText;
 
-    private int currentWave = 0;
+    public int currentWave = 0;
     private int enemiesToSpawn = 0;
     private int enemiesSpawned = 0;
     private int enemiesAlive = 0;
@@ -26,12 +31,13 @@ public class SPAWNER : MonoBehaviour
     void Start()
     {
         waveText.gameObject.SetActive(true);
+        pauseWaveText.gameObject.SetActive(false);
+
         StartNextWave();
     }
 
     void Update()
     {
-        // SKIP WAVE
         if (skipWave)
         {
             skipWave = false;
@@ -45,6 +51,9 @@ public class SPAWNER : MonoBehaviour
             waveActive = false;
             waveFinished = true;
 
+            ShowPauseText();
+            wavePaused = true;
+
             ScoreManager.Instance.comboPaused = true;
             FindObjectOfType<Teleport>().ResetTeleportFlag();
 
@@ -52,11 +61,13 @@ public class SPAWNER : MonoBehaviour
             return;
         }
 
-        // WAVE TERMINAT NORMAL
         if (waveActive && enemiesAlive <= 0 && enemiesSpawned == enemiesToSpawn)
         {
             waveActive = false;
             waveFinished = true;
+
+            ShowPauseText();
+            wavePaused = true;
 
             ScoreManager.Instance.comboPaused = true;
             FindObjectOfType<Teleport>().ResetTeleportFlag();
@@ -75,23 +86,38 @@ public class SPAWNER : MonoBehaviour
 
         waveFinished = false;
         waveActive = true;
+        wavePaused = false;
+        enemiesFrozen = false;   // 🔥 DEZ-ÎNGHEȚĂ INAMICII LA WAVE NOU
 
         currentWave++;
 
-        waveText.text = "Wave " + currentWave;
+        ShowWaveText("Wave " + currentWave);
 
-        // 🔥 BALANSARE WAVE 1–3 (mult mai ușoare)
         if (currentWave == 1) enemiesToSpawn = 4;
         else if (currentWave == 2) enemiesToSpawn = 7;
         else if (currentWave == 3) enemiesToSpawn = 12;
         else
-            enemiesToSpawn = Mathf.RoundToInt(8 * Mathf.Pow(1.35f, currentWave)); // 🔥 Wave 4+ identic cu ce aveai
+            enemiesToSpawn = Mathf.RoundToInt(8 * Mathf.Pow(1.35f, currentWave));
 
         enemiesSpawned = 0;
         enemiesAlive = 0;
 
         StartCoroutine(UnpauseComboDelayed());
         StartCoroutine(StartWaveDelayed());
+    }
+
+    void ShowPauseText()
+    {
+        waveText.gameObject.SetActive(false);
+        pauseWaveText.gameObject.SetActive(true);
+        pauseWaveText.text = "Wave Paused";
+    }
+
+    void ShowWaveText(string text)
+    {
+        pauseWaveText.gameObject.SetActive(false);
+        waveText.gameObject.SetActive(true);
+        waveText.text = text;
     }
 
     IEnumerator StartWaveDelayed()
@@ -111,16 +137,14 @@ public class SPAWNER : MonoBehaviour
     {
         while (enemiesSpawned < enemiesToSpawn)
         {
-            if (enemiesAlive < 20)
+            if (enemiesAlive < 15)
             {
                 SpawnEnemy();
                 enemiesSpawned++;
                 enemiesAlive++;
             }
 
-            // 🔥 spawn rate gradual (dar wave 4 rămâne ca acum)
-            float dynamicInterval = Mathf.Clamp(0.5f - currentWave * 0.1f, 0.1f, 0.5f);
-            yield return new WaitForSeconds(dynamicInterval);
+            yield return new WaitForSeconds(1.3f);
         }
     }
 
@@ -134,7 +158,7 @@ public class SPAWNER : MonoBehaviour
         if (enemiesSpawned >= enemiesToSpawn)
             return;
 
-        if (enemiesAlive < 20)
+        if (enemiesAlive < 15)
         {
             SpawnEnemy();
             enemiesSpawned++;
@@ -149,7 +173,6 @@ public class SPAWNER : MonoBehaviour
         Vector2 screenMin = cam.ScreenToWorldPoint(new Vector3(0, 0));
         Vector2 screenMax = cam.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height));
 
-        // 🔥 distanță graduală (wave 4 = identic cu ce aveai)
         float offset = Mathf.Clamp(6f - currentWave, 2f, 6f);
 
         Vector2 spawnPos = Vector2.zero;
@@ -175,7 +198,8 @@ public class SPAWNER : MonoBehaviour
                 break;
         }
 
-        GameObject enemy = Instantiate(enemyPrefab, spawnPos, Quaternion.identity);
+        int index = Random.Range(0, enemyPrefabs.Length);
+        GameObject enemy = Instantiate(enemyPrefabs[index], spawnPos, Quaternion.identity);
 
         EnemyFollow follow = enemy.GetComponent<EnemyFollow>();
         EnemyDamage dmg = enemy.GetComponent<EnemyDamage>();
@@ -183,5 +207,12 @@ public class SPAWNER : MonoBehaviour
         follow.player = player;
         follow.spawner = this;
         dmg.spawner = this;
+
+        bool goToCore = (Random.value < 0.5f);
+        follow.targetCore = goToCore;
+
+        follow.coreTransform = coreTransform;
+
+        follow.ScaleWithWave(currentWave);
     }
 }

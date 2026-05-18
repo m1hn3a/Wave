@@ -4,18 +4,14 @@ using TMPro;
 public class ShootingUpgradeStation : MonoBehaviour
 {
     public PlayerShoot playerShoot;
-    public int upgradeCost = 1;
-
-    [Header("UI Upgrade Text")]
-    public TextMeshProUGUI upgradeText;   // 🔥 tragi TMP-ul aici
-    public string[] upgradeDescriptions;  // 🔥 text pentru fiecare upgrade
+    public TextMeshProUGUI upgradeText;
 
     private bool playerInside = false;
 
     void Start()
     {
         if (upgradeText != null)
-            upgradeText.gameObject.SetActive(false); // ascuns la început
+            upgradeText.gameObject.SetActive(false);
     }
 
     void Update()
@@ -23,7 +19,7 @@ public class ShootingUpgradeStation : MonoBehaviour
         if (playerInside && Input.GetKeyDown(KeyCode.E))
         {
             BuyUpgrade();
-            UpdateUpgradeText(); // 🔥 actualizează textul după upgrade
+            UpdateUpgradeText();
         }
     }
 
@@ -32,7 +28,8 @@ public class ShootingUpgradeStation : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInside = true;
-            UpdateUpgradeText(); // 🔥 afișează textul corect
+            UpdateUpgradeText();
+
             if (upgradeText != null)
                 upgradeText.gameObject.SetActive(true);
         }
@@ -43,6 +40,7 @@ public class ShootingUpgradeStation : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInside = false;
+
             if (upgradeText != null)
                 upgradeText.gameObject.SetActive(false);
         }
@@ -50,7 +48,9 @@ public class ShootingUpgradeStation : MonoBehaviour
 
     void BuyUpgrade()
     {
-        if (!TokenSystem.Instance.SpendToken(upgradeCost))
+        int cost = GetUpgradeCost();
+
+        if (!TokenSystem.Instance.SpendToken(cost))
         {
             Debug.Log("NU AI DESTUI TOKENI!");
             return;
@@ -60,40 +60,69 @@ public class ShootingUpgradeStation : MonoBehaviour
         {
             case FireMode.SingleReload:
                 playerShoot.fireMode = FireMode.SemiAuto;
+                Debug.Log("UPGRADE 1 → SEMI AUTO");
                 break;
 
             case FireMode.SemiAuto:
                 playerShoot.fireMode = FireMode.FullAuto;
+                Debug.Log("UPGRADE 2 → FULL AUTO");
                 break;
 
             case FireMode.FullAuto:
                 playerShoot.fireMode = FireMode.TripleShot;
+                Debug.Log("UPGRADE 3 → TRIPLE SHOT");
                 break;
 
             case FireMode.TripleShot:
-                Debug.Log("MAX UPGRADE");
-                break;
+                Debug.Log("MAX UPGRADE REACHED");
+                return;
         }
+
+        // 🔥 IMPORTANT — actualizează ammo pentru noul mod
+        playerShoot.SetAmmoForMode();
     }
 
-    // 🔥 AICI SE SCHIMBĂ TEXTUL ÎN FUNCȚIE DE UPGRADE
+    int GetUpgradeCost()
+    {
+        switch (playerShoot.fireMode)
+        {
+            case FireMode.SingleReload: return 1;
+            case FireMode.SemiAuto:     return 1;
+            case FireMode.FullAuto:     return 1;
+            case FireMode.TripleShot:   return 0;
+        }
+        return 0;
+    }
+
+    // 🔥 TEXTELE DE UPGRADE
     void UpdateUpgradeText()
     {
         if (upgradeText == null) return;
 
-        int index = 0;
-
         switch (playerShoot.fireMode)
         {
-            case FireMode.SingleReload: index = 0; break;
-            case FireMode.SemiAuto:     index = 1; break;
-            case FireMode.FullAuto:     index = 2; break;
-            case FireMode.TripleShot:   index = 3; break;
-        }
+            case FireMode.SingleReload:
+                upgradeText.text =
+                    "Unlocks Semi-Auto fire mode \n" +
+                    "Cost: 1tk";
+                break;
 
-        if (index < upgradeDescriptions.Length)
-            upgradeText.text = upgradeDescriptions[index];
-        else
-            upgradeText.text = "MAX UPGRADE";
+            case FireMode.SemiAuto:
+                upgradeText.text =
+                    "Unlocks Full Auto \n" +
+                    "Cost: 1tk";
+                break;
+
+            case FireMode.FullAuto:
+                upgradeText.text =
+                    "Unlocks Triple Shot \n" +
+                    "Cost: 1tk";
+                break;
+
+            case FireMode.TripleShot:
+                upgradeText.text =
+                    "Weapon Upgrade: MAX LEVEL";
+                break;
+        }
     }
 }

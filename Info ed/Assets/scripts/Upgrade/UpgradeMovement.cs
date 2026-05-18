@@ -1,12 +1,15 @@
 using UnityEngine;
+using TMPro;
 
 public class MovementSpeedUpgradeStation : MonoBehaviour
 {
-    public movement playerMovement;
+    [Header("References")]
+    public movement playerMovement;            // tragi Player-ul aici
+    public TextMeshProUGUI upgradeText;        // TMP-ul din canvasul playerului
+
+    [Header("Settings")]
     public int cost = 1;
     public float speedIncreaseFlat = 0.75f;
-    
- // 🔥 creștere lentă
     public int maxLevel = 5;
 
     private bool playerInside = false;
@@ -14,19 +17,29 @@ public class MovementSpeedUpgradeStation : MonoBehaviour
     void Update()
     {
         if (playerInside && Input.GetKeyDown(KeyCode.E))
+        {
             BuySpeedUpgrade();
+            UpdateUpgradeText(); // actualizăm textul după cumpărare
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
+        {
             playerInside = true;
+            UpdateUpgradeText(); // afișăm textul când intră
+            upgradeText.gameObject.SetActive(true);
+        }
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
+        {
             playerInside = false;
+            upgradeText.gameObject.SetActive(false); // ascundem textul
+        }
     }
 
     void BuySpeedUpgrade()
@@ -46,4 +59,16 @@ public class MovementSpeedUpgradeStation : MonoBehaviour
         playerMovement.IncreaseSpeed(speedIncreaseFlat);
         playerMovement.speedLevel++;
     }
-}
+
+    void UpdateUpgradeText()
+    {
+        if (playerMovement.speedLevel >= maxLevel)
+        {
+            upgradeText.text = "Movement Speed: MAX LEVEL";
+            return;
+        }
+
+ upgradeText.text =
+    "Increase Movement Speed : 1tk\n" +
+    "Current Level: " + playerMovement.speedLevel + " / " + maxLevel;
+    }}

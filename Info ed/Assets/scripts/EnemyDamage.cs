@@ -38,41 +38,42 @@ public class EnemyDamage : MonoBehaviour
         }
     }
 
-    public void Die(Vector2 hitDirection)
+   public void Die(Vector2 hitDirection)
+{
+    if (isDead) return;
+    isDead = true;
+
+    Debug.Log("[ENEMY] DIE called");
+
+    if (deathParticles != null)
     {
-        if (isDead) return;
+        // Spawn la Z = -0.2
+        Vector3 spawnPos = new Vector3(transform.position.x, transform.position.y, -10f);
+        GameObject p = Instantiate(deathParticles, spawnPos, Quaternion.identity);
 
-        isDead = true;
+        float angle = Mathf.Atan2(hitDirection.y, hitDirection.x) * Mathf.Rad2Deg;
+        p.transform.rotation = Quaternion.Euler(0, 0, angle);
 
-        Debug.Log("[ENEMY] DIE called");
+        ParticleSystem ps = p.GetComponent<ParticleSystem>();
 
-        if (deathParticles != null)
+        if (ps != null)
         {
-            GameObject p = Instantiate(deathParticles, transform.position, Quaternion.identity);
-
-            float angle = Mathf.Atan2(hitDirection.y, hitDirection.x) * Mathf.Rad2Deg;
-            p.transform.rotation = Quaternion.Euler(0, 0, angle);
-
-            ParticleSystem ps = p.GetComponent<ParticleSystem>();
-
-            if (ps != null)
-            {
-                float totalDuration = ps.main.duration + ps.main.startLifetime.constantMax;
-                Destroy(p, totalDuration);
-            }
-            else
-            {
-                Destroy(p, 5f);
-            }
+            float totalDuration = ps.main.duration + ps.main.startLifetime.constantMax;
+            Destroy(p, totalDuration);
         }
-
-        ScoreManager.Instance.AddKill(10);
-
-        if (spawner != null)
-            spawner.OnEnemyDeath();
-
-        Destroy(gameObject);
+        else
+        {
+            Destroy(p, 5f);
+        }
     }
+
+    ScoreManager.Instance.AddKill(10);
+
+    if (spawner != null)
+        spawner.OnEnemyDeath();
+
+    Destroy(gameObject);
+}
 
     public void Die()
     {

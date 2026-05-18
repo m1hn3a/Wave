@@ -1,10 +1,15 @@
 using UnityEngine;
+using TMPro;
 
 public class BulletPiercingUpgradeStation : MonoBehaviour
 {
-    public PlayerShoot playerShoot;   // tragi Player-ul aici
-    public int cost = 1;              // cost fix
-    public int maxPierceLevel = 3;    // după 3 → infinite
+    [Header("References")]
+    public PlayerShoot playerShoot;           
+    public TextMeshProUGUI upgradeText;       
+
+    [Header("Settings")]
+    public int cost = 1;                      
+    public int maxPierceLevel = 3;            
 
     private bool playerInside = false;
 
@@ -13,6 +18,7 @@ public class BulletPiercingUpgradeStation : MonoBehaviour
         if (playerInside && Input.GetKeyDown(KeyCode.E))
         {
             BuyPierceUpgrade();
+            UpdateUpgradeText();
         }
     }
 
@@ -21,7 +27,8 @@ public class BulletPiercingUpgradeStation : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInside = true;
-            Debug.Log("Player entered PIERCE upgrade zone");
+            UpdateUpgradeText();
+            upgradeText.gameObject.SetActive(true);
         }
     }
 
@@ -30,28 +37,59 @@ public class BulletPiercingUpgradeStation : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInside = false;
+            upgradeText.gameObject.SetActive(false);
         }
     }
 
     void BuyPierceUpgrade()
     {
+        if (playerShoot.bulletPierce >= maxPierceLevel)
+        {
+            Debug.Log("Piercing MAX LEVEL");
+            return;
+        }
+
         if (!TokenSystem.Instance.SpendToken(cost))
         {
             Debug.Log("NU AI DESTUI TOKENI!");
             return;
         }
 
-        // dacă nu e la max → crește pierce
-        if (playerShoot.bulletPierce < maxPierceLevel)
+        playerShoot.bulletPierce++;
+        Debug.Log("Pierce upgraded → " + playerShoot.bulletPierce);
+    }
+
+    void UpdateUpgradeText()
+    {
+        // MAX LEVEL
+        if (playerShoot.bulletPierce >= maxPierceLevel)
         {
-            playerShoot.bulletPierce++;
-            Debug.Log("Pierce upgraded → " + playerShoot.bulletPierce);
+            upgradeText.text =
+                "Bullet Piercing: MAX LEVEL\n" +
+                "Bullets pierce up to 3 enemies";
+            return;
         }
-        else
+
+        // NIVEL NORMAL
+        switch (playerShoot.bulletPierce)
         {
-            // infinite pierce
-            playerShoot.bulletPierce = 9999;
-            Debug.Log("MAX PIERCE → Infinite!");
+            case 0:
+                upgradeText.text =
+                    "Unlocks Bullet Piercing (pierce 1 enemy)\n" +
+                    "Cost: 1tk";
+                break;
+
+            case 1:
+                upgradeText.text =
+                    "Increase Piercing (pierce 2 enemies)\n" +
+                    "Cost: 1tk";
+                break;
+
+            case 2:
+                upgradeText.text =
+                    "Increase Piercing (pierce 3 enemies)\n" +
+                    "Cost: 1tk";
+                break;
         }
     }
 }
