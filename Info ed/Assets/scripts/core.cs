@@ -4,7 +4,7 @@ using TMPro;
 public class Core : MonoBehaviour
 {
     [Header("Enemy Damage")]
-public int damagePerHit = 10;
+    public int damagePerHit = 10;
 
     [Header("Core Health")]
     public float maxHP = 200;
@@ -25,6 +25,10 @@ public int damagePerHit = 10;
     private float originalSpeed;
     private bool speedReduced = false;
 
+    // 🔥 Heal în pauză — max 10 secunde
+    private float pauseHealTimer = 0f;
+    private float maxPauseHealTime = 10f;
+
     void Start()
     {
         currentHP = maxHP;
@@ -34,23 +38,28 @@ public int damagePerHit = 10;
     }
 
     void Update()
-{
-    // 1. Reactorul poate muri ORICÂND, indiferent de pauză
-    if (currentHP <= 0)
     {
-        OnCoreDestroyed();
-        return;
+        // Reactorul poate muri oricând
+        if (currentHP <= 0)
+        {
+            OnCoreDestroyed();
+            return;
+        }
+
+        // Dacă NU e pauză → nu poți repara + reset timer
+        if (!SPAWNER.wavePaused)
+        {
+            pauseHealTimer = 0f;
+            return;
+        }
+
+        // Dacă e pauză → poți repara DOAR 10 secunde
+        if (playerInsideRepair && pauseHealTimer < maxPauseHealTime)
+        {
+            RepairCore();
+            pauseHealTimer += Time.deltaTime;
+        }
     }
-
-    // 2. Dacă wave-ul e pe pauză → blocăm DOAR repair-ul
-    if (SPAWNER.wavePaused)
-        return;
-
-    // 3. Dacă playerul e în zona de repair → reparăm
-    if (playerInsideRepair)
-        RepairCore();
-}
-
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -74,9 +83,10 @@ public int damagePerHit = 10;
 
         if (buildText != null)
         {
-            buildText.text = SPAWNER.wavePaused ?
-                "Can't repair core while paused" :
-                "Press E to repair core";
+            if (SPAWNER.wavePaused)
+                buildText.text = "Heals reactor for ten seconds during pause";
+            else
+                buildText.text = "healing reactor, shooting disabled";
 
             buildText.gameObject.SetActive(true);
         }
@@ -89,9 +99,10 @@ public int damagePerHit = 10;
 
         if (buildText != null)
         {
-            buildText.text = SPAWNER.wavePaused ?
-                "Can't repair core while paused" :
-                "Press E to repair core";
+            if (SPAWNER.wavePaused)
+                buildText.text = "Heals reactor for ten seconds during pause";
+            else
+                buildText.text = "healing reactor, shooting disabled";
         }
     }
 
@@ -135,22 +146,21 @@ public int damagePerHit = 10;
         currentHP = Mathf.Clamp(currentHP, 0, maxHP);
     }
 
-   void OnCoreDestroyed()
-{
-    var death = FindAnyObjectByType<DeathScreen>();
-    if (death != null)
+    void OnCoreDestroyed()
     {
-        int finalScore = ScoreManager.Instance.score;
-        int finalWave = FindAnyObjectByType<SPAWNER>().currentWave;
+        var death = FindAnyObjectByType<DeathScreen>();
+        if (death != null)
+        {
+            int finalScore = ScoreManager.Instance.score;
+            int finalWave = FindAnyObjectByType<SPAWNER>().currentWave;
 
-        death.ShowDeathScreen("REACTOR", finalScore, finalWave);
+            death.ShowDeathScreen("REACTOR", finalScore, finalWave);
+        }
+
+        SPAWNER.wavePaused = true;
+
+        var player = FindAnyObjectByType<movement>();
+        if (player != null)
+            player.canMove = false;
     }
-
-    SPAWNER.wavePaused = true;
-
-    var player = FindAnyObjectByType<movement>();
-    if (player != null)
-        player.canMove = false;
-}
-
 }

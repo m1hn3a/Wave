@@ -35,6 +35,16 @@ public class EnemyFollow : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
+    void Start()
+    {
+        UpdateLookTarget();
+    }
+
+    void UpdateLookTarget()
+    {
+        lookTarget = targetCore ? coreTransform : player;
+    }
+
     public void ScaleWithWave(int wave)
     {
         float multiplier = 1f + wave * 0.2f;
@@ -54,7 +64,6 @@ public class EnemyFollow : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // PLAYER knockback
         if (collision.collider.CompareTag("Player"))
         {
             Vector2 dir = (transform.position - collision.transform.position).normalized;
@@ -66,7 +75,6 @@ public class EnemyFollow : MonoBehaviour
             bumpTimer = bumpDuration;
         }
 
-        // CORE damage + knockback
         if (collision.collider.CompareTag("Core"))
         {
             Vector2 dir = (transform.position - collision.transform.position).normalized;
@@ -85,15 +93,11 @@ public class EnemyFollow : MonoBehaviour
 
     void FixedUpdate()
     {
-        // 🔥 FREEZE INSTANT când moare playerul sau reactorul
         if (SPAWNER.enemiesFrozen)
         {
             rb.linearVelocity = Vector2.zero;
             return;
         }
-
-        if (player == null)
-            return;
 
         if (isBumped)
         {
@@ -105,13 +109,10 @@ public class EnemyFollow : MonoBehaviour
             return;
         }
 
-        // Ținta
-        Transform core = coreTransform != null ? coreTransform : GameObject.FindGameObjectWithTag("Core").transform;
-        Vector2 targetPos = targetCore ? core.position : player.position;
+        UpdateLookTarget();
 
-        lookTarget = targetCore ? core : player;
+        Vector2 targetPos = lookTarget.position;
 
-        // Prea aproape de player → împinge înapoi
         if (!targetCore)
         {
             float dist = Vector2.Distance(transform.position, player.position);
@@ -124,10 +125,8 @@ public class EnemyFollow : MonoBehaviour
             }
         }
 
-        // Direcția principală
         Vector2 moveDir = (targetPos - (Vector2)transform.position).normalized;
 
-        // Wobble
         Vector2 wobble = new Vector2(
             Mathf.PerlinNoise(Time.time * 1.2f, transform.position.x) - 0.5f,
             Mathf.PerlinNoise(Time.time * 1.2f, transform.position.y) - 0.5f
@@ -135,7 +134,6 @@ public class EnemyFollow : MonoBehaviour
 
         moveDir += wobble;
 
-        // Avoidance
         Collider2D[] nearby = Physics2D.OverlapCircleAll(transform.position, avoidanceRadius);
 
         foreach (var col in nearby)

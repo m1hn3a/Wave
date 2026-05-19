@@ -7,8 +7,8 @@ public class movement : MonoBehaviour
     [HideInInspector] public Vector2 lastMoveDirection;
     public bool canMove = true;
 
-    public Transform playerVisual; 
-    public Transform armPivot;     
+    public Transform playerVisual;
+    public Transform armPivot;
 
     public int speedLevel = 0;
 
@@ -25,8 +25,14 @@ public class movement : MonoBehaviour
     public Animator anim;
 
     [Header("Core Repair")]
-    public Core core;               // 🔥 tragi Reactorul aici în Inspector
+    public Core core;
     public bool isRepairing = false;
+
+    void Start()
+    {
+        Time.timeScale = 1f;
+        PauseManager.isPaused = false;
+    }
 
     void Awake()
     {
@@ -35,24 +41,27 @@ public class movement : MonoBehaviour
 
     void Update()
     {
-        // 🔥 REPAIR LOGIC
+        if (PauseManager.isPaused)
+        {
+            rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
         if (core != null && core.playerInsideRepair && Input.GetKey(KeyCode.E))
         {
             isRepairing = true;
             core.RepairCore();
 
-            // opțional: oprești animația de mers
             anim.SetFloat("Speed", 0);
             anim.SetBool("IsMoving", false);
 
-            return; // nu mai procesăm mișcarea
+            return;
         }
         else
         {
             isRepairing = false;
         }
 
-        // 🔥 INPUT NORMAL
         input = new Vector2(
             Input.GetAxisRaw("Horizontal"),
             Input.GetAxisRaw("Vertical")
@@ -61,12 +70,10 @@ public class movement : MonoBehaviour
         if (input != Vector2.zero)
             lastMoveDirection = input;
 
-        // 🔥 ANIMAȚIE
         float speed = input.magnitude;
         anim.SetFloat("Speed", speed);
         anim.SetBool("IsMoving", speed > 0.1f);
 
-        // 🔥 FLIP
         if (input.x > 0 && !facingRight)
             Flip();
         else if (input.x < 0 && facingRight)
@@ -113,6 +120,5 @@ public class movement : MonoBehaviour
     {
         moveSpeed += flatAmount;
         speedLevel++;
-        Debug.Log("Speed upgraded → " + moveSpeed + " | Level: " + speedLevel);
     }
 }

@@ -67,6 +67,8 @@ public class PlayerShoot : MonoBehaviour
 
     void Update()
     {
+        if (PauseManager.isPaused) return;
+
         AimArmAtMouse();
         UpdateLaser();
 

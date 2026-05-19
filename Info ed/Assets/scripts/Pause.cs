@@ -6,6 +6,12 @@ public class PauseManager : MonoBehaviour
     public GameObject pausePanel;
     public static bool isPaused = false;
 
+    void Start()
+    {
+        Time.timeScale = 1f;
+        isPaused = false;
+    }
+
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -34,11 +40,12 @@ public class PauseManager : MonoBehaviour
     public void MainMenu()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene("Main Menu");
+        SceneManager.LoadScene("MainMenu");
     }
 
     public void QuitGame()
     {
         Application.Quit();
     }
+
 }

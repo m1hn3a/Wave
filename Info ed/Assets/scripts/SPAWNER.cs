@@ -5,7 +5,7 @@ using System.Collections;
 public class SPAWNER : MonoBehaviour
 {
     public static bool wavePaused = false;
-    public static bool enemiesFrozen = false;   // 🔥 FREEZE GLOBAL
+    public static bool enemiesFrozen = false;
 
     [Header("Main Settings")]
     public GameObject[] enemyPrefabs;
@@ -30,6 +30,9 @@ public class SPAWNER : MonoBehaviour
 
     void Start()
     {
+        wavePaused = false;
+        enemiesFrozen = false;
+
         waveText.gameObject.SetActive(true);
         pauseWaveText.gameObject.SetActive(false);
 
@@ -48,35 +51,30 @@ public class SPAWNER : MonoBehaviour
             enemiesAlive = 0;
             enemiesSpawned = enemiesToSpawn;
 
-            waveActive = false;
-            waveFinished = true;
-
-            ShowPauseText();
-            wavePaused = true;
-
-            ScoreManager.Instance.comboPaused = true;
-            FindObjectOfType<Teleport>().ResetTeleportFlag();
-
-            TokenSystem.Instance.AddToken();
+            EndWave();
             return;
         }
 
+        // 🔥 FINAL DE WAVE AUTOMAT
         if (waveActive && enemiesAlive <= 0 && enemiesSpawned == enemiesToSpawn)
         {
-            waveActive = false;
-            waveFinished = true;
-
-            ShowPauseText();
-            wavePaused = true;
-
-            ScoreManager.Instance.comboPaused = true;
-            FindObjectOfType<Teleport>().ResetTeleportFlag();
-
-            TokenSystem.Instance.AddToken();
+            EndWave();
         }
+    }
 
-        if (!waveActive)
-            return;
+    void EndWave()
+    {
+        waveActive = false;
+        waveFinished = true;
+
+        wavePaused = true;
+        enemiesFrozen = true;
+
+        ShowPauseText();
+
+        ScoreManager.Instance.comboPaused = true;
+        FindObjectOfType<Teleport>().ResetTeleportFlag();
+        TokenSystem.Instance.AddToken();
     }
 
     public void StartNextWave()
@@ -87,7 +85,7 @@ public class SPAWNER : MonoBehaviour
         waveFinished = false;
         waveActive = true;
         wavePaused = false;
-        enemiesFrozen = false;   // 🔥 DEZ-ÎNGHEȚĂ INAMICII LA WAVE NOU
+        enemiesFrozen = false;
 
         currentWave++;
 
@@ -96,8 +94,7 @@ public class SPAWNER : MonoBehaviour
         if (currentWave == 1) enemiesToSpawn = 4;
         else if (currentWave == 2) enemiesToSpawn = 7;
         else if (currentWave == 3) enemiesToSpawn = 12;
-        else
-            enemiesToSpawn = Mathf.RoundToInt(8 * Mathf.Pow(1.35f, currentWave));
+        else enemiesToSpawn = Mathf.RoundToInt(8 * Mathf.Pow(1.35f, currentWave));
 
         enemiesSpawned = 0;
         enemiesAlive = 0;
@@ -113,7 +110,7 @@ public class SPAWNER : MonoBehaviour
         pauseWaveText.text = "Wave Paused";
     }
 
-    void ShowWaveText(string text)
+    public void ShowWaveText(string text)
     {
         pauseWaveText.gameObject.SetActive(false);
         waveText.gameObject.SetActive(true);
@@ -155,10 +152,15 @@ public class SPAWNER : MonoBehaviour
         if (!waveActive)
             return;
 
-        if (enemiesSpawned >= enemiesToSpawn)
+        // 🔥 FINAL DE WAVE CORECT
+        if (enemiesSpawned >= enemiesToSpawn && enemiesAlive <= 0)
+        {
+            EndWave();
             return;
+        }
 
-        if (enemiesAlive < 15)
+        // 🔥 Spawn continuu
+        if (enemiesAlive < 15 && enemiesSpawned < enemiesToSpawn)
         {
             SpawnEnemy();
             enemiesSpawned++;
@@ -205,13 +207,13 @@ public class SPAWNER : MonoBehaviour
         EnemyDamage dmg = enemy.GetComponent<EnemyDamage>();
 
         follow.player = player;
+        follow.coreTransform = coreTransform;
         follow.spawner = this;
+
         dmg.spawner = this;
 
         bool goToCore = (Random.value < 0.5f);
         follow.targetCore = goToCore;
-
-        follow.coreTransform = coreTransform;
 
         follow.ScaleWithWave(currentWave);
     }

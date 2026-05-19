@@ -38,58 +38,42 @@ public class EnemyDamage : MonoBehaviour
         }
     }
 
-   public void Die(Vector2 hitDirection)
-{
-    if (isDead) return;
-    isDead = true;
-
-    Debug.Log("[ENEMY] DIE called");
-
-    if (deathParticles != null)
+    public void Die(Vector2 hitDirection)
     {
-        // Spawn la Z = -0.2
-        Vector3 spawnPos = new Vector3(transform.position.x, transform.position.y, -10f);
-        GameObject p = Instantiate(deathParticles, spawnPos, Quaternion.identity);
+        if (isDead) return;
+        isDead = true;
 
-        float angle = Mathf.Atan2(hitDirection.y, hitDirection.x) * Mathf.Rad2Deg;
-        p.transform.rotation = Quaternion.Euler(0, 0, angle);
-
-        ParticleSystem ps = p.GetComponent<ParticleSystem>();
-
-        if (ps != null)
+        if (deathParticles != null)
         {
-            float totalDuration = ps.main.duration + ps.main.startLifetime.constantMax;
-            Destroy(p, totalDuration);
+            Vector3 spawnPos = new Vector3(transform.position.x, transform.position.y, -10f);
+            GameObject p = Instantiate(deathParticles, spawnPos, Quaternion.identity);
+
+            float angle = Mathf.Atan2(hitDirection.y, hitDirection.x) * Mathf.Rad2Deg;
+            p.transform.rotation = Quaternion.Euler(0, 0, angle);
+
+            ParticleSystem ps = p.GetComponent<ParticleSystem>();
+
+            if (ps != null)
+            {
+                float totalDuration = ps.main.duration + ps.main.startLifetime.constantMax;
+                Destroy(p, totalDuration);
+            }
+            else
+            {
+                Destroy(p, 5f);
+            }
         }
-        else
-        {
-            Destroy(p, 5f);
-        }
+
+        ScoreManager.Instance.AddKill(10);
+
+        if (spawner != null)
+            spawner.OnEnemyDeath();
+
+        Destroy(gameObject);
     }
-
-    ScoreManager.Instance.AddKill(10);
-
-    if (spawner != null)
-        spawner.OnEnemyDeath();
-
-    Destroy(gameObject);
-}
 
     public void Die()
     {
         Die(Vector2.right);
-    }
-
-    public void FreezeEnemy()
-    {
-        if (followScript != null)
-            followScript.enabled = false;
-
-        if (rb != null)
-        {
-            rb.linearVelocity = Vector2.zero;
-            rb.angularVelocity = 0f;
-            rb.bodyType = RigidbodyType2D.Kinematic;
-        }
     }
 }
