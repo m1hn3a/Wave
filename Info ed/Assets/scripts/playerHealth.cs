@@ -98,22 +98,25 @@ public class PlayerHealth : MonoBehaviour
     }
 
     public void Die()
-{
-    var death = FindAnyObjectByType<DeathScreen>();
-    if (death != null)
     {
-        int finalScore = ScoreManager.Instance.score;
-        int finalWave = FindAnyObjectByType<SPAWNER>().currentWave;
+        // 🔊 Sunet de moarte player
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.playerDeathSFX);
 
-        death.ShowDeathScreen("PLAYER", finalScore, finalWave);
+        var death = FindAnyObjectByType<DeathScreen>();
+        if (death != null)
+        {
+            int finalScore = ScoreManager.Instance.score;
+            int finalWave = FindAnyObjectByType<SPAWNER>().currentWave;
+
+            death.ShowDeathScreen("PLAYER", finalScore, finalWave);
+        }
+
+        SPAWNER.wavePaused = true;
+
+        movement player = GetComponent<movement>();
+        if (player != null)
+            player.canMove = false;
+
+        gameObject.SetActive(false); // sau animație de moarte
     }
-
-    SPAWNER.wavePaused = true;
-    movement player = GetComponent<movement>();
-if (player != null)
-    player.canMove = false;
-
-    gameObject.SetActive(false); // sau animație de moarte
-}
-
 }

@@ -4,11 +4,11 @@ using TMPro;
 public class HealthUpgradeStation : MonoBehaviour
 {
     [Header("References")]
-    public PlayerHealth playerHealth;          // tragi Player-ul aici
-    public TextMeshProUGUI upgradeText;        // TMP-ul din canvasul playerului
+    public PlayerHealth playerHealth;
+    public TextMeshProUGUI upgradeText;
 
     [Header("Settings")]
-    public int healCost = 1;                   // mereu 1 token
+    public int healCost = 1;
 
     private bool playerInside = false;
 
@@ -17,7 +17,7 @@ public class HealthUpgradeStation : MonoBehaviour
         if (playerInside && Input.GetKeyDown(KeyCode.E))
         {
             BuyHeal();
-            UpdateUpgradeText(); // textul rămâne același, dar îl chemăm pentru consistență
+            UpdateUpgradeText();
         }
     }
 
@@ -26,7 +26,7 @@ public class HealthUpgradeStation : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInside = true;
-            UpdateUpgradeText();               // afișăm textul când intră
+            UpdateUpgradeText();
             upgradeText.gameObject.SetActive(true);
         }
     }
@@ -36,34 +36,30 @@ public class HealthUpgradeStation : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInside = false;
-            upgradeText.gameObject.SetActive(false); // ascundem textul
+            upgradeText.gameObject.SetActive(false);
         }
     }
 
     void BuyHeal()
     {
-        // 🔥 NU POATE CUMPĂRA DACĂ VIAȚA E FULL
         if (playerHealth.currentHealth >= playerHealth.maxHealth)
-        {
-            Debug.Log("HP FULL → nu poți cumpăra heal.");
             return;
-        }
 
         if (!TokenSystem.Instance.SpendToken(healCost))
-        {
-            Debug.Log("NU AI DESTUI TOKENI!");
             return;
-        }
+
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.upgradeSFX);
 
         playerHealth.currentHealth = playerHealth.maxHealth;
         playerHealth.UpdateHealthUI();
 
-        Debug.Log("HP FULLY HEALED!");
+        // 🔥 Salvăm tokenii
+        UpgradeManager.tokens = TokenSystem.Instance.tokens;
+        UpgradeManager.SaveAll();
     }
 
     void UpdateUpgradeText()
     {
-        upgradeText.text =
-            "Fully heals the player: 1tk";
+        upgradeText.text = "Fully heals the player: 1tk";
     }
 }

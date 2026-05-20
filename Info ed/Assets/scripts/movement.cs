@@ -115,6 +115,13 @@ public class movement : MonoBehaviour
             Time.deltaTime * tiltSpeed
         );
     }
+   public void ApplyLoadedSpeed()
+{
+    speedLevel = UpgradeManager.speedLevel;
+
+    // Recalculăm viteza exact ca în upgrade
+    moveSpeed = 5f + (speedLevel * 0.75f);
+}
 
     public void IncreaseSpeed(float flatAmount)
     {

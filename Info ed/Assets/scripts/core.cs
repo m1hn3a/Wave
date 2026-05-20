@@ -10,24 +10,31 @@ public class Core : MonoBehaviour
     public float maxHP = 200;
     public float currentHP;
 
-    [Header("Damage & Repair Settings")]
-    public float repairPerSecond = 2;
-    public float enemyDamagePerSecond = 10f;
+    [Header("Heal Settings")]
+    public float healPerSecond = 5f;
+    public float maxPauseHealTime = 5f;
 
     [Header("UI")]
     public TMP_Text buildText;
 
-    public bool playerInsideRepair = false;
+    private bool playerInside = false;
+
+    public bool playerInsideRepair
+    {
+        get => playerInside;
+        set => playerInside = value;
+    }
+
+    private float pauseHealTimer = 0f;
 
     private movement playerMove;
     private PlayerShoot playerShoot;
 
-    private float originalSpeed;
+    private float slowMultiplier = 0.75f;
     private bool speedReduced = false;
 
-    // 🔥 Heal în pauză — max 10 secunde
-    private float pauseHealTimer = 0f;
-    private float maxPauseHealTime = 10f;
+    // 🔥 FIX: prevenim apelarea repetată a OnCoreDestroyed()
+    private bool coreDestroyed = false;
 
     void Start()
     {
@@ -39,26 +46,54 @@ public class Core : MonoBehaviour
 
     void Update()
     {
-        // Reactorul poate muri oricând
         if (currentHP <= 0)
         {
             OnCoreDestroyed();
             return;
         }
 
-        // Dacă NU e pauză → nu poți repara + reset timer
-        if (!SPAWNER.wavePaused)
+        if (!playerInside)
+            return;
+
+        bool paused = SPAWNER.wavePaused;
+        bool holdingE = Input.GetKey(KeyCode.E);
+
+        if (!paused)
         {
             pauseHealTimer = 0f;
+
+            if (holdingE)
+                HealCore();
+
             return;
         }
 
-        // Dacă e pauză → poți repara DOAR 10 secunde
-        if (playerInsideRepair && pauseHealTimer < maxPauseHealTime)
+        if (holdingE && pauseHealTimer < maxPauseHealTime)
         {
-            RepairCore();
-            pauseHealTimer += Time.deltaTime;
+            float healTime = Mathf.Min(Time.deltaTime, maxPauseHealTime - pauseHealTimer);
+
+            currentHP += healPerSecond * healTime;
+            currentHP = Mathf.Clamp(currentHP, 0, maxHP);
+
+            pauseHealTimer += healTime;
         }
+    }
+
+    private void HealCore()
+    {
+        currentHP += healPerSecond * Time.deltaTime;
+        currentHP = Mathf.Clamp(currentHP, 0, maxHP);
+    }
+
+    public void RepairCore()
+    {
+        HealCore();
+    }
+
+    public void TakeDamage(int amount)
+    {
+        currentHP -= amount;
+        currentHP = Mathf.Clamp(currentHP, 0, maxHP);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -66,30 +101,21 @@ public class Core : MonoBehaviour
         if (!other.CompareTag("Player"))
             return;
 
-        playerInsideRepair = true;
+        playerInside = true;
 
         playerMove = other.GetComponent<movement>();
         playerShoot = other.GetComponent<PlayerShoot>();
 
         if (playerMove != null && !speedReduced)
         {
-            originalSpeed = playerMove.moveSpeed;
-            playerMove.moveSpeed *= 0.75f;
+            playerMove.moveSpeed *= slowMultiplier;
             speedReduced = true;
         }
 
         if (playerShoot != null)
             playerShoot.canShoot = false;
 
-        if (buildText != null)
-        {
-            if (SPAWNER.wavePaused)
-                buildText.text = "Heals reactor for ten seconds during pause";
-            else
-                buildText.text = "healing reactor, shooting disabled";
-
-            buildText.gameObject.SetActive(true);
-        }
+        UpdateText();
     }
 
     private void OnTriggerStay2D(Collider2D other)
@@ -97,13 +123,7 @@ public class Core : MonoBehaviour
         if (!other.CompareTag("Player"))
             return;
 
-        if (buildText != null)
-        {
-            if (SPAWNER.wavePaused)
-                buildText.text = "Heals reactor for ten seconds during pause";
-            else
-                buildText.text = "healing reactor, shooting disabled";
-        }
+        UpdateText();
     }
 
     private void OnTriggerExit2D(Collider2D other)
@@ -111,11 +131,11 @@ public class Core : MonoBehaviour
         if (!other.CompareTag("Player"))
             return;
 
-        playerInsideRepair = false;
+        playerInside = false;
 
         if (playerMove != null && speedReduced)
         {
-            playerMove.moveSpeed = originalSpeed;
+            playerMove.moveSpeed /= slowMultiplier;
             speedReduced = false;
         }
 
@@ -126,28 +146,36 @@ public class Core : MonoBehaviour
             buildText.gameObject.SetActive(false);
     }
 
+    private void UpdateText()
+    {
+        if (buildText == null)
+            return;
+
+        if (SPAWNER.wavePaused)
+            buildText.text = "Hold E to heal (max 5s)";
+        else
+            buildText.text = "Hold E to heal. Shooting is disabled";
+
+        buildText.gameObject.SetActive(true);
+    }
+
     private void OnCollisionStay2D(Collision2D collision)
     {
         if (collision.collider.CompareTag("Enemy"))
         {
-            TakeDamage(Mathf.RoundToInt(enemyDamagePerSecond * Time.deltaTime));
+            TakeDamage(Mathf.RoundToInt(10f * Time.deltaTime));
         }
-    }
-
-    public void TakeDamage(int amount)
-    {
-        currentHP -= amount;
-        currentHP = Mathf.Clamp(currentHP, 0, maxHP);
-    }
-
-    public void RepairCore()
-    {
-        currentHP += repairPerSecond * Time.deltaTime;
-        currentHP = Mathf.Clamp(currentHP, 0, maxHP);
     }
 
     void OnCoreDestroyed()
     {
+        // 🔥 FIX: rulează o singură dată
+        if (coreDestroyed) return;
+        coreDestroyed = true;
+
+        // 🔊 Sunet de explozie reactor
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.reactorDeathSFX);
+
         var death = FindAnyObjectByType<DeathScreen>();
         if (death != null)
         {

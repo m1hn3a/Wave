@@ -4,8 +4,13 @@ using System.Collections;
 
 public class SPAWNER : MonoBehaviour
 {
+    // 🔥 FLAGS GLOBALE (folosite de Teleport, Tutorial, Token etc.)
     public static bool wavePaused = false;
     public static bool enemiesFrozen = false;
+
+    public static bool tutorialMode = false;
+    public static bool forcePaused = false;
+    public static bool waveFinished = false;
 
     [Header("Main Settings")]
     public GameObject[] enemyPrefabs;
@@ -23,7 +28,6 @@ public class SPAWNER : MonoBehaviour
     private int enemiesAlive = 0;
 
     public bool waveActive = false;
-    public bool waveFinished = false;
 
     [Header("Debug")]
     public bool skipWave = false;
@@ -32,15 +36,35 @@ public class SPAWNER : MonoBehaviour
     {
         wavePaused = false;
         enemiesFrozen = false;
+        forcePaused = false;
+        waveFinished = false;
 
         waveText.gameObject.SetActive(true);
         pauseWaveText.gameObject.SetActive(false);
 
-        StartNextWave();
+        // dacă e tutorial, nu pornim wave-urile automat
+        if (!tutorialMode)
+            StartNextWave();
     }
 
     void Update()
     {
+        // 🔥 FREEZE FRAME
+        if (Input.GetKeyDown(KeyCode.M))
+            Time.timeScale = 0f;
+
+        // 🔥 UNFREEZE FRAME
+        if (Input.GetKeyDown(KeyCode.N))
+            Time.timeScale = 1f;
+
+        // 🔥 TOKEN DEBUG
+        if (Input.GetKeyDown(KeyCode.L))
+            TokenSystem.Instance.AddToken();
+
+        // dacă tutorialul a înghețat jocul, nu mai rulăm logică de wave
+        if (forcePaused)
+            return;
+
         if (skipWave)
         {
             skipWave = false;

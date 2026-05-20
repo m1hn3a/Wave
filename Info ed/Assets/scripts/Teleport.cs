@@ -23,14 +23,20 @@ public class Teleport : MonoBehaviour
 
     void Update()
     {
-        // dacă wave-ul nu e gata → nu poți ține TAB
-        if (!spawner.waveFinished)
+        // 🔥 În tutorial → teleport nelimitat
+        if (SPAWNER.tutorialMode)
+        {
+            TutorialTeleportLogic();
+            return;
+        }
+
+        // 🔥 Normal game logic
+        if (!SPAWNER.waveFinished)
         {
             HideBar();
             return;
         }
 
-        // dacă ești în Safe Zone → SPACE te întoarce
         if (inSafeZone)
         {
             HideBar();
@@ -41,7 +47,6 @@ public class Teleport : MonoBehaviour
             return;
         }
 
-        // dacă ai teleportat deja în acest wave → nu mai poți
         if (hasTeleportedThisWave)
         {
             HideBar();
@@ -49,6 +54,24 @@ public class Teleport : MonoBehaviour
         }
 
         HandleTabHold();
+    }
+
+    // 🔥 LOGICĂ SPECIALĂ PENTRU TUTORIAL
+    void TutorialTeleportLogic()
+    {
+        // Dacă ești în SafeZone → SPACE te întoarce
+        if (inSafeZone)
+        {
+            HideBar();
+
+            if (Input.GetKeyDown(KeyCode.Space))
+                TeleportBackToArena();
+
+            return;
+        }
+
+        // Dacă ești în arenă → TAB te duce în SafeZone
+        HandleTabHold(); // fără limită, fără waveFinished
     }
 
     void HandleTabHold()
@@ -92,8 +115,8 @@ public class Teleport : MonoBehaviour
         transform.position = lastArenaPosition;
         Camera.main.GetComponent<CameraFollow>().SnapNow();
 
-        // pornește următorul wave
-        spawner.StartNextWave();
+        if (!SPAWNER.tutorialMode)
+            spawner.StartNextWave();
     }
 
     public void ResetTeleportFlag()

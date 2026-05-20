@@ -4,13 +4,13 @@ using TMPro;
 public class MovementSpeedUpgradeStation : MonoBehaviour
 {
     [Header("References")]
-    public movement playerMovement;            // tragi Player-ul aici
-    public TextMeshProUGUI upgradeText;        // TMP-ul din canvasul playerului
+    public movement playerMovement;
+    public TextMeshProUGUI upgradeText;
 
     [Header("Settings")]
     public int cost = 1;
-    public float speedIncreaseFlat = 0.75f;
-    public int maxLevel = 5;
+    public float speedIncreaseFlat = 0.5f;
+    public int maxLevel = 4;
 
     private bool playerInside = false;
 
@@ -19,7 +19,7 @@ public class MovementSpeedUpgradeStation : MonoBehaviour
         if (playerInside && Input.GetKeyDown(KeyCode.E))
         {
             BuySpeedUpgrade();
-            UpdateUpgradeText(); // actualizăm textul după cumpărare
+            UpdateUpgradeText();
         }
     }
 
@@ -28,7 +28,7 @@ public class MovementSpeedUpgradeStation : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInside = true;
-            UpdateUpgradeText(); // afișăm textul când intră
+            UpdateUpgradeText();
             upgradeText.gameObject.SetActive(true);
         }
     }
@@ -38,26 +38,26 @@ public class MovementSpeedUpgradeStation : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInside = false;
-            upgradeText.gameObject.SetActive(false); // ascundem textul
+            upgradeText.gameObject.SetActive(false);
         }
     }
 
     void BuySpeedUpgrade()
     {
         if (playerMovement.speedLevel >= maxLevel)
-        {
-            Debug.Log("Movement speed MAX LEVEL!");
             return;
-        }
 
         if (!TokenSystem.Instance.SpendToken(cost))
-        {
-            Debug.Log("NU AI DESTUI TOKENI!");
             return;
-        }
+
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.upgradeSFX);
 
         playerMovement.IncreaseSpeed(speedIncreaseFlat);
-        playerMovement.speedLevel++;
+
+        // 🔥 Salvăm în UpgradeManager
+        UpgradeManager.speedLevel = playerMovement.speedLevel;
+        UpgradeManager.tokens = TokenSystem.Instance.tokens;
+        UpgradeManager.SaveAll();
     }
 
     void UpdateUpgradeText()
@@ -68,7 +68,8 @@ public class MovementSpeedUpgradeStation : MonoBehaviour
             return;
         }
 
- upgradeText.text =
-    "Increase Movement Speed : 1tk\n" +
-    "Current Level: " + playerMovement.speedLevel + " / " + maxLevel;
-    }}
+        upgradeText.text =
+            "Increase Movement Speed: 1tk\n" +
+            "Current Level: " + playerMovement.speedLevel + "/" + maxLevel;
+    }
+}

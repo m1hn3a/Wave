@@ -61,6 +61,19 @@ public class Dash : MonoBehaviour
             }
         }
     }
+ public void ApplyLoadedDash()
+{
+    dashLevel = UpgradeManager.dashLevel;
+
+    dashUnlocked = dashLevel > 0;
+
+    // Recalculăm dashSpeed exact ca în upgrade
+    dashSpeed = 8f + (dashLevel * 3.5f);
+
+    if (dashSpeed > maxDashSpeed)
+        dashSpeed = maxDashSpeed;
+}
+
 
     public void UpgradeDashPower(float flatIncrease)
     {

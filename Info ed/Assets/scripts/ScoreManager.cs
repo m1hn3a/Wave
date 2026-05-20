@@ -16,7 +16,7 @@ public class ScoreManager : MonoBehaviour
     [HideInInspector]
     public bool comboPaused = false;
 
-    // 🔥 NOU
+    // 🔥 Pauză la început de wave
     private bool waitingForFirstKill = false;
     private float waveStartTimer = 0f;
 
@@ -27,7 +27,15 @@ public class ScoreManager : MonoBehaviour
 
     void Update()
     {
-        // 🔥 PAUZĂ LA ÎNCEPUT DE WAVE
+        // 🔥 ȘTERGE TOATĂ SALVAREA CU TASTA O (pentru prezentare)
+if (Input.GetKeyDown(KeyCode.O))
+{
+    PlayerPrefs.DeleteAll();
+    PlayerPrefs.Save();
+    Debug.Log("🔥 TOATĂ SALVAREA A FOST ȘTEARSĂ!");
+}
+
+        // 🔥 Pauză la început de wave
         if (waitingForFirstKill)
         {
             waveStartTimer -= Time.deltaTime;
@@ -38,7 +46,7 @@ public class ScoreManager : MonoBehaviour
                 waitingForFirstKill = false;
             }
 
-            return; // nu rulăm restul logicii cât timp e pauză
+            return;
         }
 
         if (comboPaused)
@@ -64,7 +72,7 @@ public class ScoreManager : MonoBehaviour
     {
         comboPaused = true;
         waitingForFirstKill = true;
-        waveStartTimer = 3f; // 3 secunde pauză
+        waveStartTimer = 3f; 
     }
 
     public void AddKill(int basePoints)
@@ -86,5 +94,17 @@ public class ScoreManager : MonoBehaviour
 
         ScoreUI.Instance.UpdateScore(score);
         ScoreUI.Instance.UpdateCombo(comboMultiplier);
+    }
+
+    // 🔥 SALVARE HIGHSCORE
+    public void SaveHighscore()
+    {
+        int oldHigh = PlayerPrefs.GetInt("highscore", 0);
+
+        if (score > oldHigh)
+        {
+            PlayerPrefs.SetInt("highscore", score);
+            PlayerPrefs.Save();
+        }
     }
 }

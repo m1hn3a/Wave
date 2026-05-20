@@ -37,7 +37,7 @@ public class PlayerShoot : MonoBehaviour
     public Transform armPivot;
 
     [Header("Repair Lock")]
-    public bool canShoot = true;   // 🔥 ADĂUGAT
+    public bool canShoot = true;
 
     public FireMode fireMode = FireMode.SingleReload;
 
@@ -117,7 +117,7 @@ public class PlayerShoot : MonoBehaviour
             case FireMode.SingleReload: maxAmmo = 1; break;
             case FireMode.SemiAuto:     maxAmmo = 7; break;
             case FireMode.FullAuto:     maxAmmo = 20; break;
-            case FireMode.TripleShot:   maxAmmo = 15; break;
+            case FireMode.TripleShot:   maxAmmo = 30; break;
         }
 
         currentAmmo = maxAmmo;
@@ -175,7 +175,7 @@ public class PlayerShoot : MonoBehaviour
         UpdateAmmoUI();
     }
 
-    void UpdateAmmoUI()
+   public void UpdateAmmoUI()
     {
         if (ammoText != null)
             ammoText.text = currentAmmo + "/" + maxAmmo;
@@ -183,7 +183,7 @@ public class PlayerShoot : MonoBehaviour
 
     void Shoot()
     {
-        if (!canShoot) return; // 🔥 BLOCĂM TRAGEREA ÎN ZONA DE REPAIR
+        if (!canShoot) return;
 
         switch (fireMode)
         {
@@ -255,9 +255,27 @@ public class PlayerShoot : MonoBehaviour
             }
         }
     }
+  public void ApplyLoadedStats()
+{
+    // Fire mode
+    fireMode = UpgradeManager.fireMode;
+
+    // Bullet pierce
+    bulletPierce = UpgradeManager.pierceLevel;
+
+    // Ammo pentru modul încărcat
+    SetAmmoForMode();
+
+    // UI
+    UpdateAmmoUI();
+}
+
 
     void ShootBullet()
     {
+        // 🔊 Sunet de împușcare
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.shootSFX);
+
         Quaternion rot = firePoint.rotation;
 
         if (!move.facingRight)

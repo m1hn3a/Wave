@@ -17,7 +17,8 @@ public class TokenSystem : MonoBehaviour
     void Update()
     {
         // UI-ul cu tokeni apare doar în pauză
-        bool inPause = spawner.waveFinished && !spawner.waveActive;
+        bool inPause = SPAWNER.waveFinished && !spawner.waveActive;
+
 
         tokenText.gameObject.SetActive(inPause);
 

@@ -4,12 +4,12 @@ using TMPro;
 public class UpgradeDashPower : MonoBehaviour
 {
     [Header("References")]
-    public Dash dashScript;                   // tragi Player-ul aici
-    public TextMeshProUGUI upgradeText;       // TMP-ul din canvasul playerului
+    public Dash dashScript;
+    public TextMeshProUGUI upgradeText;
 
     [Header("Settings")]
     public int cost = 1;
-    public float dashIncreaseFlat = 3.5f;     // creștere per nivel
+    public float dashIncreaseFlat = 3.5f;
     public int maxLevel = 5;
 
     private bool playerInside = false;
@@ -19,7 +19,7 @@ public class UpgradeDashPower : MonoBehaviour
         if (playerInside && Input.GetKeyDown(KeyCode.E))
         {
             BuyDashPowerUpgrade();
-            UpdateUpgradeText(); // actualizăm textul după upgrade
+            UpdateUpgradeText();
         }
     }
 
@@ -28,7 +28,7 @@ public class UpgradeDashPower : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInside = true;
-            UpdateUpgradeText();               // afișăm textul când intră
+            UpdateUpgradeText();
             upgradeText.gameObject.SetActive(true);
         }
     }
@@ -38,40 +38,37 @@ public class UpgradeDashPower : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             playerInside = false;
-            upgradeText.gameObject.SetActive(false); // ascundem textul
+            upgradeText.gameObject.SetActive(false);
         }
     }
 
     void BuyDashPowerUpgrade()
     {
         if (dashScript.dashLevel >= maxLevel)
-        {
-            Debug.Log("Dash MAX LEVEL!");
             return;
-        }
 
         if (!TokenSystem.Instance.SpendToken(cost))
-        {
-            Debug.Log("NU AI DESTUI TOKENI!");
             return;
-        }
+
+        AudioManager.Instance.PlaySFX(AudioManager.Instance.upgradeSFX);
 
         dashScript.UpgradeDashPower(dashIncreaseFlat);
         dashScript.dashLevel++;
+
+        // 🔥 Salvăm în UpgradeManager
+        UpgradeManager.dashLevel = dashScript.dashLevel;
+        UpgradeManager.tokens = TokenSystem.Instance.tokens;
+        UpgradeManager.SaveAll();
     }
 
-   void UpdateUpgradeText()
-{
-    // MAX LEVEL
-    if (dashScript.dashLevel >= maxLevel)
+    void UpdateUpgradeText()
     {
-        upgradeText.text = "Dash Power: MAX LEVEL";
-        return;
+        if (dashScript.dashLevel >= maxLevel)
+        {
+            upgradeText.text = "Dash Power: MAX LEVEL";
+            return;
+        }
+
+        upgradeText.text = "Increase Dash Power: 1tk";
     }
-
-    // NIVEL NORMAL
-    upgradeText.text =
-        "Increase Dash level : " + cost + "tk";
-}
-
 }

@@ -1,39 +1,28 @@
 using UnityEngine;
+using TMPro;
 using UnityEngine.SceneManagement;
-using System.IO;
 
 public class MainMenu : MonoBehaviour
 {
-    public string gameplaySceneName = "SampleScene";
-    public static bool loadRequested = false;
+    public TMP_Text highscoreText;
 
-    public void NewGame()
+    void Start()
     {
-        loadRequested = false;
-
-        string path = Application.persistentDataPath + "/save.json";
-        if (File.Exists(path))
-            File.Delete(path);
-
-        SceneManager.LoadScene(gameplaySceneName);
+        int hs = PlayerPrefs.GetInt("highscore", 0);
+        highscoreText.text = "Highscore: " + hs;
     }
 
-    public void LoadGame()
+    public void PlayGame()
     {
-        string path = Application.persistentDataPath + "/save.json";
-
-        if (!File.Exists(path))
-        {
-            Debug.Log("No save found!");
-            return;
-        }
-
-        loadRequested = true;
-        SceneManager.LoadScene(gameplaySceneName);
+        SceneManager.LoadScene("Tutorial");
     }
 
     public void QuitGame()
     {
         Application.Quit();
+
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
     }
 }
