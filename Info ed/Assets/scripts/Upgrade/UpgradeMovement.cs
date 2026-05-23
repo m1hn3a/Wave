@@ -10,7 +10,7 @@ public class MovementSpeedUpgradeStation : MonoBehaviour
     [Header("Settings")]
     public int cost = 1;
     public float speedIncreaseFlat = 0.5f;
-    public int maxLevel = 4;
+    public int maxLevel = 10;
 
     private bool playerInside = false;
 

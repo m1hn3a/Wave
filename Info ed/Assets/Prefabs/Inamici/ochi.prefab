@@ -108,7 +108,7 @@ MonoBehaviour:
   player: {fileID: 0}
   coreTransform: {fileID: 0}
   targetCore: 0
-  speed: 2
+  speed: 2.83
   avoidanceRadius: 1
   avoidanceStrength: 1.5
   wobbleStrength: 0.5
@@ -205,6 +205,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawner: {fileID: 0}
+  hitParticles: {fileID: 6903413903355230253, guid: 2489c13bf8f526a40ac140809a056f4e, type: 3}
   damage: 10
   damageCooldown: 0
   deathParticles: {fileID: 6903413903355230253, guid: cd0e0200e919b6244a3adbe34c212daf, type: 3}
