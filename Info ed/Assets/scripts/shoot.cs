@@ -22,7 +22,7 @@ public class PlayerShoot : MonoBehaviour
     [Header("Ammo System")]
     public int currentAmmo;
     public int maxAmmo;
-    public float reloadTime = 2.5f;
+    public float reloadTime = 1.5f;
     private bool isReloading = false;
 
     [Header("Laser Settings")]
@@ -124,56 +124,45 @@ public class PlayerShoot : MonoBehaviour
         UpdateAmmoUI();
     }
 
-    System.Collections.IEnumerator Reload()
+  System.Collections.IEnumerator Reload()
+{
+    isReloading = true;
+
+    if (reloadIcon != null)
     {
-        isReloading = true;
-
-        if (reloadIcon != null)
-        {
-            reloadIcon.gameObject.SetActive(true);
-            reloadIcon.localRotation = Quaternion.Euler(0, 0, -90f);
-        }
-
-        float timer = 0f;
-
-        while (timer < 1f)
-        {
-            timer += Time.deltaTime;
-            float t = timer / 1f;
-            float angle = Mathf.Lerp(-90f, 90f, t);
-
-            if (reloadIcon != null)
-                reloadIcon.localRotation = Quaternion.Euler(0, 0, angle);
-
-            yield return null;
-        }
-
-        yield return new WaitForSeconds(0.5f);
-
-        timer = 0f;
-        while (timer < 1f)
-        {
-            timer += Time.deltaTime;
-            float t = timer / 1f;
-            float angle = Mathf.Lerp(90f, 270f, t);
-
-            if (reloadIcon != null)
-                reloadIcon.localRotation = Quaternion.Euler(0, 0, angle);
-
-            yield return null;
-        }
-
-        currentAmmo = maxAmmo;
-        isReloading = false;
-
-        if (reloadIcon != null)
-        {
-            reloadIcon.localRotation = Quaternion.Euler(0, 0, -90f);
-            reloadIcon.gameObject.SetActive(true);
-        }
-
-        UpdateAmmoUI();
+        reloadIcon.gameObject.SetActive(true);
+        reloadIcon.localRotation = Quaternion.Euler(0, 0, -90f);
     }
+
+    float timer = 0f;
+
+    // 🔥 Rotim icon-ul pe durata reloadTime (1.5 secunde)
+    while (timer < reloadTime)
+    {
+        timer += Time.deltaTime;
+        float t = timer / reloadTime;
+
+        float angle = Mathf.Lerp(-90f, 270f, t);
+
+        if (reloadIcon != null)
+            reloadIcon.localRotation = Quaternion.Euler(0, 0, angle);
+
+        yield return null;
+    }
+
+    // 🔥 Resetăm ammo
+    currentAmmo = maxAmmo;
+    isReloading = false;
+
+    if (reloadIcon != null)
+    {
+        reloadIcon.localRotation = Quaternion.Euler(0, 0, -90f);
+        reloadIcon.gameObject.SetActive(true);
+    }
+
+    UpdateAmmoUI();
+}
+
 
    public void UpdateAmmoUI()
     {

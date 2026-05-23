@@ -4,6 +4,10 @@ public class EnemyDamage : MonoBehaviour
 {
     public SPAWNER spawner;
 
+    [Header("Hit Particles")]
+public GameObject hitParticles;
+
+
     [Header("Damage Settings")]
     public int damage = 10;
     public float damageCooldown = 1f;
@@ -41,6 +45,29 @@ public class EnemyDamage : MonoBehaviour
     public void Die(Vector2 hitDirection)
     {
         if (isDead) return;
+
+        // 🔥 Spawn particule de impact (glonț)
+if (hitParticles != null)
+{
+    Vector3 spawnPos = new Vector3(transform.position.x, transform.position.y, -10f);
+    GameObject h = Instantiate(hitParticles, spawnPos, Quaternion.identity);
+
+    float angle = Mathf.Atan2(hitDirection.y, hitDirection.x) * Mathf.Rad2Deg;
+    h.transform.rotation = Quaternion.Euler(0, 0, angle);
+
+    ParticleSystem psHit = h.GetComponent<ParticleSystem>();
+
+    if (psHit != null)
+    {
+        float totalDuration = psHit.main.duration + psHit.main.startLifetime.constantMax;
+        Destroy(h, totalDuration);
+    }
+    else
+    {
+        Destroy(h, 3f);
+    }
+}
+
         isDead = true;
 
         if (deathParticles != null)

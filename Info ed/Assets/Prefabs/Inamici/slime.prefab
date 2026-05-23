@@ -33,7 +33,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -6.8, y: 2.82, z: 0}
-  m_LocalScale: {x: 2.55, y: 2.87, z: 1}
+  m_LocalScale: {x: 2.5, y: 2.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -108,7 +108,7 @@ MonoBehaviour:
   player: {fileID: 0}
   coreTransform: {fileID: 0}
   targetCore: 0
-  speed: 1.31
+  speed: 2.83
   avoidanceRadius: 1
   avoidanceStrength: 1.5
   wobbleStrength: 0.5
@@ -159,6 +159,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawner: {fileID: 0}
+  hitParticles: {fileID: 6903413903355230253, guid: 2489c13bf8f526a40ac140809a056f4e, type: 3}
   damage: 10
   damageCooldown: 0
   deathParticles: {fileID: 6903413903355230253, guid: 039453e49ff336140ac9b484577bf56c, type: 3}
