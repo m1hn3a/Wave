@@ -54,7 +54,7 @@ public class MovementSpeedUpgradeStation : MonoBehaviour
 
         playerMovement.IncreaseSpeed(speedIncreaseFlat);
 
-        // 🔥 Salvăm în UpgradeManager
+        //  Salvăm în UpgradeManager
         UpgradeManager.speedLevel = playerMovement.speedLevel;
         UpgradeManager.tokens = TokenSystem.Instance.tokens;
         UpgradeManager.SaveAll();

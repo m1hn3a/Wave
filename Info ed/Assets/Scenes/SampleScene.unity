@@ -5508,7 +5508,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.88803226, g: 0.9528302, b: 0.25618547, a: 1}
+  m_Color: {r: 0.45531672, g: 0.5396226, b: 0.44697043, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -11876,20 +11876,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8f8ca50f5c1e594c8b1aec07e3e6c9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  winPanel: {fileID: 1804085524}
   enemyPrefabs:
   - {fileID: 6942470647352165969, guid: be0dce57856d8c049b169f183a2c517f, type: 3}
   - {fileID: 6942470647352165969, guid: e7542ed37b62cea4aa00b078e71a2c14, type: 3}
   - {fileID: 6942470647352165969, guid: e2d5e64a936bec84ebc6c405df9daa81, type: 3}
   player: {fileID: 394749913}
   coreTransform: {fileID: 1228813900}
+  totalWaves: 20
   waveText: {fileID: 2099168374}
   pauseWaveText: {fileID: 922148820}
   currentWave: 0
-  totalWaves: 20
-  enemiesToSpawn: 0
-  enemiesSpawned: 0
-  enemiesAlive: 0
   waveActive: 0
   skipWave: 0
 --- !u!4 &1637070702
@@ -11936,20 +11932,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a60ee35487a26f7498c980f4ea209ebf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isNewGame: 0
-  loadReady: 0
-  savedWave: 1
-  savedScore: 0
-  savedTokens: 0
-  savedPlayerHP: 100
-  savedCoreHP: 100
-  savedAmmo: 0
-  savedMaxAmmo: 0
-  savedFireMode: 0
-  savedPierce: 0
-  savedDashLevel: 0
-  savedSpeedLevel: 0
-  savedMoveSpeed: 5
 --- !u!4 &1640851120
 Transform:
   m_ObjectHideFlags: 0

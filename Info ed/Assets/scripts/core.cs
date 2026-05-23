@@ -33,7 +33,7 @@ public class Core : MonoBehaviour
     private float slowMultiplier = 0.75f;
     private bool speedReduced = false;
 
-    // 🔥 FIX: prevenim apelarea repetată a OnCoreDestroyed()
+    //   FIX: prevenim apelarea repetată a OnCoreDestroyed()
     private bool coreDestroyed = false;
 
     void Start()
@@ -169,7 +169,7 @@ public class Core : MonoBehaviour
 
     void OnCoreDestroyed()
     {
-        // 🔥 FIX: rulează o singură dată
+        //   FIX: rulează o singură dată
         if (coreDestroyed) return;
         coreDestroyed = true;
 
